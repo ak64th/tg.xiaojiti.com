@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1, minimum-scale=1">
+
+  {% block title %}<title>团购助手</title>{% endblock %}
+  {% block style %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}" type="text/css" media="screen"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/m.css') }}" type="text/css" media="screen"/>
+  {% endblock style%}
+</head>
+<body>
+{% block body %}
+团购助手
+{% endblock body %}
+{% block script %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/resize.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/m.js') }}"></script>
+{% endblock script %}
+</body>
+</html>
