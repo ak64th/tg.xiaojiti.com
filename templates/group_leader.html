@@ -1,47 +1,32 @@
 {% extends "layout.html" %}
-{% block title %}
-<title>我是团长</title>
-{% endblock %}
+
+{% block title %}<title>团购助手</title>{% endblock %}
+
 {% block body %}
-<div class="block-menu clear">
-  <a href="小集体大白菜.html" class="menu1 menu-big fl">
-    <img src="{{ url_for('static', filename='img/menu-cai-icon.png') }}">
-    <span>菜</span>
-  </a>
-  <a href="小集体大白菜.html" class="menu2 fr">
-    <img src="{{ url_for('static', filename='img/menu-jiu-icon.png') }}">
-    <span>酒</span>
-  </a>
-  <a href="小集体大白菜.html" class="menu3 fr"></a>
-  <a href="小集体大白菜.html" class="menu4 menu-big fr">
-    <img src="{{ url_for('static', filename='img/menu-cai-icon.png') }}">
-    <span>菜</span>
-  </a>
-  <a href="小集体大白菜.html" class="menu5 fl">
-    <img src="{{ url_for('static', filename='img/menu-jiu-icon.png') }}">
-    <span>酒</span>
-  </a>
-  <a href="小集体大白菜.html" class="menu6 fl"></a>
-  <a href="小集体大白菜.html" class="menu1 menu-big fl">
-    <img src="{{ url_for('static', filename='img/menu-cai-icon.png') }}">
-    <span>菜</span>
-  </a>
-  <a href="小集体大白菜.html" class="menu2 fr">
-    <img src="{{ url_for('static', filename='img/menu-jiu-icon.png') }}">
-    <span>酒</span>
-  </a>
-  <a href="小集体大白菜.html" class="menu3 fr"></a>
-  <a href="小集体大白菜.html" class="menu4 menu-big fr">
-    <img src="{{ url_for('static', filename='img/menu-cai-icon.png') }}">
-    <span>菜</span>
-  </a>
-  <a href="小集体大白菜.html" class="menu5 fl">
-    <img src="{{ url_for('static', filename='img/menu-jiu-icon.png') }}">
-    <span>酒</span>
-  </a>
-  <a href="小集体大白菜.html" class="menu6 fl"></a>
+<div id="group_view_container">
+<div class="block-menu clear" id="group_list_container" style="margin-bottom:60px">
+<script type="text/template" id="group_list_template">
+  <% if(index % 6 === 0) { %>
+  <a class="menu1 menu-big fl" id="group_<%= group.id %>"><img src="/static/img/menu-cai-icon.png"><span><%= group.title %></span></a></a>
+  <% } else if(index % 6 === 1) { %>
+  <a class="menu2 fr"><img src="/static/img/menu-jiu-icon.png"><span><%= group.title %></span></a>
+  <% } else if(index % 6 === 2) { %>
+  <a class="menu3 fr"><span><%= group.title %></span></a>
+  <% } else if(index % 6 === 3) { %>
+  <a class="menu4 menu-big fr"><img src="/static/img/menu-cai-icon.png"><span><%= group.title %></span></a>
+  <% } else if(index % 6 === 4) { %>
+  <a class="menu5 fl"><img src="/static/img/menu-jiu-icon.png"><span><%= group.title %></span></a>
+  <% } else if(index % 6 === 5) { %>
+  <a class="menu6 fl"><img src="/static/img/menu-jiu-icon.png"><span><%= group.title %></span></a>
+  <% } %>
+</script>
 </div>
-<div class="btn-create-group"></div>
 <div class="btn-create-group-fixed-bg"></div>
-<a href="#" class="btn-create-group btn-create-group-fixed">添加新的商品</a>
+<a href="团购我是团长_弹出窗.html" class="btn-create-group btn-create-group-fixed">添加新的商品</a>
+</div>
 {% endblock body %}
+
+{% block script %}
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock script %}

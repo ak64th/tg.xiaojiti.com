@@ -34,4 +34,10 @@ if __name__ == '__main__':
     defaults = dict(password=make_password('123456'), admin=True)
     User.get_or_create(username='admin', defaults=defaults)
 
+    wx_user, _ = WXUser.get_or_create(openid='ba39kz15abg2')
+    for group_name in (u'白菜团', u'跑鞋团', u'啤酒团', u'桑拿团', u'烧鸡团', u'烤肉团', u'坦克团'):
+        Group.get_or_create(leader=wx_user, title=group_name, defaults={'content': u'团购%s' % group_name[:-1]})
+    Product.get_or_create(group=1, title=u'一般小白菜', defaults=dict(content=u'可以吃', price=12.4))
+    Product.get_or_create(group=1, title=u'辐射大白菜', defaults=dict(content=u'巨大', price=100))
+
     app.run()

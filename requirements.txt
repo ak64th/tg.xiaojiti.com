@@ -8,5 +8,6 @@ argparse==1.2.1
 flask-peewee==0.6.6
 itsdangerous==0.24
 peewee==2.6.4
+simplejson==3.8.1
 wsgiref==0.1.2
 wtf-peewee==0.2.3
