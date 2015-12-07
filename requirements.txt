@@ -4,4 +4,4 @@ peewee==2.6.4
 wtf-peewee==0.2.3
 flask-peewee==0.6.6
 simplejson==3.8.1
-https://github.com/hongqn/umysqldb/zipball/develop
+PyMySQL==0.6.7
