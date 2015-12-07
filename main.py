@@ -40,4 +40,4 @@ if __name__ == '__main__':
     Product.get_or_create(group=1, title=u'一般小白菜', defaults=dict(content=u'可以吃', price=12.4))
     Product.get_or_create(group=1, title=u'辐射大白菜', defaults=dict(content=u'巨大', price=100))
 
-    app.run()
+    app.run(host='0.0.0.0', debug=True, threaded=True)

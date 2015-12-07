@@ -1,13 +1,7 @@
 Flask==0.10.1
 Flask-Admin==1.3.0
-Jinja2==2.8
-MarkupSafe==0.23
-WTForms==2.0.2
-Werkzeug==0.11.2
-argparse==1.2.1
-flask-peewee==0.6.6
-itsdangerous==0.24
 peewee==2.6.4
-simplejson==3.8.1
-wsgiref==0.1.2
 wtf-peewee==0.2.3
+flask-peewee==0.6.6
+simplejson==3.8.1
+https://github.com/hongqn/umysqldb/zipball/develop

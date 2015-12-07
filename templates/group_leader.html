@@ -3,27 +3,58 @@
 {% block title %}<title>团购助手</title>{% endblock %}
 
 {% block body %}
-<div id="group_view_container">
-<div class="block-menu clear" id="group_list_container" style="margin-bottom:60px">
-<script type="text/template" id="group_list_template">
-  <% if(index % 6 === 0) { %>
-  <a class="menu1 menu-big fl" id="group_<%= group.id %>"><img src="/static/img/menu-cai-icon.png"><span><%= group.title %></span></a></a>
-  <% } else if(index % 6 === 1) { %>
-  <a class="menu2 fr"><img src="/static/img/menu-jiu-icon.png"><span><%= group.title %></span></a>
-  <% } else if(index % 6 === 2) { %>
-  <a class="menu3 fr"><span><%= group.title %></span></a>
-  <% } else if(index % 6 === 3) { %>
-  <a class="menu4 menu-big fr"><img src="/static/img/menu-cai-icon.png"><span><%= group.title %></span></a>
-  <% } else if(index % 6 === 4) { %>
-  <a class="menu5 fl"><img src="/static/img/menu-jiu-icon.png"><span><%= group.title %></span></a>
-  <% } else if(index % 6 === 5) { %>
-  <a class="menu6 fl"><img src="/static/img/menu-jiu-icon.png"><span><%= group.title %></span></a>
-  <% } %>
+<div id="group_view_container" style="display: none">
+  <div id="modal-container" style="display: none">
+    <div class="btn-create-group-tips-bg"></div>
+    <div class="pop-alert">
+      <div class="txt">请给您的团一个好记忆的名称，譬如说是小集体大白菜团，也可以叫做老班我要买酒</div>
+      <input class="input" type="text" id="group_add_title">
+
+      <div class="clear pop-btn">
+        <a href="#" id="group_add_cancel" class="fl">Cancel</a>
+        <a href="#" id="group_add_submit" class="fr">OK</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="block-menu clear" id="group_list_container" style="margin-bottom:60px">
+    <script type="text/template" id="group_list_template">
+      <a class="
+      <% if (index % 6 === 0) { %>
+      menu1 menu-big fl
+      <% } else if(index % 6 === 1) { %>
+      menu2 fr
+      <% } else if(index % 6 === 2) { %>
+      menu3 fr
+      <% } else if(index % 6 === 3) { %>
+      menu4 menu-big fr
+      <% } else if(index % 6 === 4) { %>
+      menu5 fl
+      <% } else if(index % 6 === 5) { %>
+      menu6 fl
+      <% } %>" id="group_<%= group.id %>" href="#/group/<%= group.id %>/"><img
+          src="/static/img/menu-cai-icon.png"><span><%- group.title %></span></a></a>
+    </script>
+  </div>
+  <div class="btn-create-group-fixed-bg"></div>
+  <a href="#" class="btn-create-group btn-create-group-fixed" id="group_add">添加新的商品</a>
+</div>
+
+<script type="text/template" id="product_template">
+  <img src="/static/img/goods-cover.png" class="cover fl">
+  <div class="txt fl">
+    <input class="btn editable" data-field="title" value="<%- product.title %>"/>
+
+    <div class="textarea-wp">
+      <textarea class="editable" data-field="content" placeholder="商品说明"><%- product.content %></textarea>
+    </div>
+  </div>
+  <div class="price fr">
+    <input class="editable price-tag" data-field="price" value="<%= product.price %>" size="6" type="text"/>元
+    <div class="btn">点击修改价格</div>
+  </div>
 </script>
-</div>
-<div class="btn-create-group-fixed-bg"></div>
-<a href="团购我是团长_弹出窗.html" class="btn-create-group btn-create-group-fixed">添加新的商品</a>
-</div>
+
 {% endblock body %}
 
 {% block script %}
