@@ -88,9 +88,9 @@ var int_app = (function(int_app){
 //模块2
 var int_app = (function(int_app){
   int_app.View = int_app.View || {};
+
   int_app.View.GroupListView = GroupListView = Backbone.View.extend({
     el: $('#group_view_container'),
-
     initialize: function(options) {
       this.wxUser = options && options.wxUser || {};
       this.collection = new int_app.Collection.GroupList();
@@ -138,9 +138,10 @@ var int_app = (function(int_app){
       data = { title: this.$('#group_add_title').val(), content: "", leader: this.wxUser.id };
       this.collection.create(data, {
         wait: true,
-        success : function(resp){
+        success : function(model, resp, options){
           console.log('success callback');
-          console.log(resp);
+          console.log(model);
+          location.hash = '/group/' + model.get('id') + '/';
         },
         error : function(err) {
           console.log('error callback');
@@ -176,8 +177,9 @@ var int_app = (function(int_app){
       $target = $(ev.currentTarget)
       field = $target.data('field');
       value = $target.val();
-      if (field && this.model.get(field) !== value){
-        this.model.set(field, value).save();
+      this.model.set(field, value)
+      if (this.model.hasChanged(field)){
+        this.model.save();
       }
       $target.removeClass('editing');
     }
@@ -195,7 +197,7 @@ var int_app = (function(int_app){
     },
     events: {
       "click .new": "newProduct",
-      "click .submit": "submit",
+      "click .submit": "submitGroup",
     },
     initialize: function(options) {
       this.initUI();
@@ -233,6 +235,9 @@ var int_app = (function(int_app){
     newProduct: function(){
       product = new this.collection.model({'group': this.group_id});
       this.collection.add(product);
+    },
+    submitGroup: function(){
+      location.hash = '/group/';
     }
   });
   return int_app;
