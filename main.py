@@ -1,16 +1,44 @@
 # coding=utf-8
-from flask import render_template
+from flask import render_template, session, jsonify, url_for, request
 from peewee import create_model_tables
 from app import app
 from models import User, WXUser, Group, Product, Purchase
 from auth import auth
 from admin import admin
 from api import api
+from werkzeug.utils import redirect
 
 
 auth.setup()
 admin.setup()
 api.setup()
+
+
+@app.route('/wechat')
+def index():
+    if 'wechat_user' in session:
+        return jsonify(session['wechat_user'])
+    return redirect(url_for('login'))
+
+
+@app.route('/login')
+def login():
+    authorize_url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd801d6ad2553a5de' \
+                    '&redirect_uri=' + url_for('.callback', _external=True) + \
+                    '&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect'
+    return redirect(authorize_url)
+
+
+@app.route('/callback')
+def callback():
+    return jsonify(request.arg)
+
+
+@app.route('/logout')
+def logout():
+    session.pop('wechat_user', None)
+    return 'OK'
+
 
 @app.route('/group_leader/')
 def group_leader():
