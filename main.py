@@ -7,11 +7,15 @@ from auth import auth
 from admin import admin
 from api import api
 from werkzeug.utils import redirect
+from urllib2 import quote
 
 
 auth.setup()
 admin.setup()
 api.setup()
+
+APPID = 'wx7d620788ff94134b'
+SECRET = 'a958b8b85075fc1665a58bf21ac8a5d6'
 
 
 @app.route('/wechat')
@@ -23,9 +27,9 @@ def index():
 
 @app.route('/login')
 def login():
-    authorize_url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd801d6ad2553a5de' \
-                    '&redirect_uri=' + url_for('.callback', _external=True) + \
-                    '&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect'
+    authorize_url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + APPID + \
+                    '&redirect_uri=' + quote(url_for('.callback', _external=True)) + \
+                    '&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect'
     return redirect(authorize_url)
 
 
@@ -43,6 +47,7 @@ def logout():
 @app.route('/group_leader/')
 def group_leader():
     return render_template('group_leader.html')
+
 
 if __name__ == '__main__':
     import logging
