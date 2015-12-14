@@ -7,7 +7,7 @@ from auth import auth
 from admin import admin
 from api import api
 from werkzeug.utils import redirect
-from urllib2 import quote
+from urllib import quote_plus, urlopen
 
 
 auth.setup()
@@ -27,15 +27,26 @@ def index():
 
 @app.route('/login')
 def login():
+    # https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx7d620788ff94134b&redirect_uri=http%3A%2F%2Ftg.xiaojiti.com%3A5000%2Fcallback&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect
+    # https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx7d620788ff94134b&redirect_uri=http%3A%2F%2Ftg.xiaojiti.com%3A5000%2Fcallback&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect
     authorize_url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + APPID + \
-                    '&redirect_uri=' + quote(url_for('.callback', _external=True)) + \
+                    '&redirect_uri=' + quote_plus(url_for('.callback', _external=True), safe='') + \
                     '&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect'
     return redirect(authorize_url)
 
 
 @app.route('/callback')
 def callback():
-    return jsonify(request.arg)
+    def create_validate_url(code):
+        return 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + APPID + \
+               '&secret=' + SECRET + '&code=' + code + '&grant_type=authorization_code'
+
+    code = request.args.get('code', None)
+    if code:
+        validate_url = create_validate_url(code)
+        resp = urlopen(validate_url).read().strip().decode('utf8', 'ignore')
+        return u'Resp: %s' % resp
+    return u'Error: no code'
 
 
 @app.route('/logout')
