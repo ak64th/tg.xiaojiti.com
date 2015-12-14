@@ -10,3 +10,5 @@ class Configuration(object):
     }
     DEBUG = True
     SECRET_KEY = 'bf1edf6b2d0f3a91f9d7d55d51e89e5779bb1e579bee'
+    WX_APP_ID = 'xxxix'
+    WX_APP_SECRET = 'xxxii'
