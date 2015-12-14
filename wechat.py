@@ -70,7 +70,7 @@ def auth_required(function):
         wx_oauth2_next_session_key = current_app.config['WX_OAUTH2_NEXT_SESSION_KEY']
         if wx_oauth2_userinfo_session_key not in flask.session:
             flask.session[wx_oauth2_next_session_key] = flask.request.path
-            return url_for('wx_auth.authorize')
+            return flask.redirect(url_for('wx_auth.authorize'))
         else:
             return function(*args, **kwargs)
 
