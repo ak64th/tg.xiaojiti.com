@@ -8,6 +8,7 @@ from admin import admin
 from api import api
 from werkzeug.utils import redirect
 from urllib import quote_plus, urlopen
+import simplejson as json
 
 
 auth.setup()
@@ -41,11 +42,21 @@ def callback():
         return 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + APPID + \
                '&secret=' + SECRET + '&code=' + code + '&grant_type=authorization_code'
 
+    def create_userinfo_url(token, openid):
+        return 'https://api.weixin.qq.com/sns/userinfo?access_token=' + token + '&openid=' + openid + '&lang=zh_CN'
+
     code = request.args.get('code', None)
     if code:
         validate_url = create_validate_url(code)
         resp = urlopen(validate_url).read().strip().decode('utf8', 'ignore')
-        return u'Resp: %s' % resp
+        app.logger.debug(resp)
+        data = json.loads(resp)
+        token = data[u'access_token']
+        openid = data[u'openid']
+        resp2 = urlopen(create_userinfo_url(token, openid)).read().strip().decode('utf8', 'ignore')
+        app.logger.debug(resp2)
+        data2 = json.loads(resp2)
+        return jsonify(userinfo=data2)
     return u'Error: no code'
 
 
