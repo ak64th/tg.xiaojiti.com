@@ -61,7 +61,10 @@
 {{ super() }}
 <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
 <script>
-var wxUser = {{ wx_user_data }};
+//var wxUser = new int_app.Model.WxUserModel
+//wxUser.fetch({data: {openid: '{{ openid }}'}, async: false})
+var wxUser = {{ wx_user_data|safe }}
+
 groupView = new int_app.View.GroupListView({wxUser: wxUser});
 
 // 路由，默认到groupList

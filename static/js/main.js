@@ -81,6 +81,12 @@ var int_app = (function(int_app){
     url: '/api/v1/product/',
   });
 
+  int_app.Model.WxUserModel = int_app.Model.BaseModel.extend({
+    urlRoot: function() {
+      return '/api/v1/wxuser/';
+    }
+  });
+
   return int_app;
 })( window.int_app || {} );
 

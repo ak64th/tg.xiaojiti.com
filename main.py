@@ -2,6 +2,8 @@
 from flask import render_template, session, jsonify, url_for, request
 from peewee import create_model_tables
 from playhouse.shortcuts import model_to_dict
+import simplejson as json
+
 from app import app
 from models import User, WXUser, Group, Product, Purchase
 from auth import auth
@@ -43,9 +45,11 @@ def save_wx_userinfo(sender, userinfo):
 @app.route('/group_leader/')
 @auth_required
 def group_leader():
+    # wx_user = WXUser.get(WXUser.openid == 'oXhUnw7OIvYKGj8ljstNJzXUZeZ0')
     wx_user = WXUser.get(WXUser.openid == wx_auth.openid)
-    wx_user_data = jsonify(model_to_dict(wx_user))
-    app.logger.debug(wx_user_data)
+    # 调用api插件来输出json，保证json序列化的一致性
+    wx_user_resource = api._registry[WXUser]
+    wx_user_data = json.dumps(wx_user_resource.serialize_object(wx_user))
     return render_template('group_leader.html', wx_user_data=wx_user_data)
 
 
