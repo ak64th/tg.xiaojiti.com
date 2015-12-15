@@ -60,4 +60,35 @@
 {% block script %}
 {{ super() }}
 <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+var wxUser = {{ wx_user_data }};
+groupView = new int_app.View.GroupListView({wxUser: wxUser});
+
+// 路由，默认到groupList
+appRouter = Backbone.Router.extend({
+  routes: {
+    "group/:id/": "groupDetails",
+    "group/":    "groupList",
+    "*path":   "groupList"
+  },
+  groupDetails : function(id) {
+    console.log('group detail route triggered. id:' + id);
+    this.loadView(new int_app.View.ProductListView({group_id: id}));
+  },
+  groupList : function(path) {
+    console.log('group detail route triggered. path:' + path);
+    this.loadView(groupView);
+  },
+  loadView : function(view) {
+		this.view && (this.view.close ? this.view.close() : this.view.remove());
+		this.view = view;
+		this.view.render();
+	}
+});
+
+
+var router = new appRouter();
+Backbone.history.start();
+
+</script>
 {% endblock script %}

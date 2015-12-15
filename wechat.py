@@ -60,7 +60,7 @@ def callback():
     wx_oauth2_userinfo_session_key = current_app.config['WX_OAUTH2_USERINFO_SESSION_KEY']
     flask.session[wx_oauth2_userinfo_session_key] = userinfo_data
 
-    wx_userinfo_fetched.send(current_app._get_current_object(), openid=openid, userinfo=userinfo_data)
+    wx_userinfo_fetched.send(current_app._get_current_object(), userinfo=userinfo_data)
 
     next_url = flask.session.get(current_app.config['WX_OAUTH2_NEXT_SESSION_KEY'],
                                  current_app.config['WX_OAUTH2_AFTER_ROUTE'])
@@ -80,9 +80,9 @@ def after():
 def auth_required(function):
     @wraps(function)
     def wrap(*args, **kwargs):
-        wx_oauth2_userinfo_session_key = current_app.config['WX_OAUTH2_USERINFO_SESSION_KEY']
+        wx_openid_session_key = current_app.config['WX_OPENID_SESSION_KEY']
         wx_oauth2_next_session_key = current_app.config['WX_OAUTH2_NEXT_SESSION_KEY']
-        if wx_oauth2_userinfo_session_key not in flask.session:
+        if wx_openid_session_key not in flask.session:
             flask.session[wx_oauth2_next_session_key] = flask.request.path
             return flask.redirect(url_for('wx_auth.authorize'))
         else:
@@ -190,4 +190,3 @@ class WXOAuth2(object):
     def userinfo(self):
         return flask.session.get(
             self.app.config['WX_OAUTH2_USERINFO_SESSION_KEY'], None)
-

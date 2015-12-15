@@ -1,6 +1,7 @@
 # coding=utf-8
 from flask import render_template, session, jsonify, url_for, request
 from peewee import create_model_tables
+from playhouse.shortcuts import model_to_dict
 from app import app
 from models import User, WXUser, Group, Product, Purchase
 from auth import auth
@@ -23,13 +24,27 @@ def show_wechat_user_info():
 
 
 @wx_userinfo_fetched.connect_via(app)
-def save_wx_userinfo(sender, openid, userinfo):
-    app.logger.debug(u'WeChat User %s authorized us for personal info: %s' % (openid, userinfo))
+def save_wx_userinfo(sender, userinfo):
+    app.logger.debug(u'WeChat User %s authorized us for personal info: %s' % (userinfo.openid, userinfo))
+    # WeChat User oXhUnw7OIvYKGj8ljstNJzXUZeZ0 authorized us for personal info:
+    # {u'province': u'', u'openid': u'oXhUnw7OIvYKGj8ljstNJzXUZeZ0', u'headimgurl': u'', u'language': u'en',
+    # u'city': u'', u'country': u'\u4e2d\u56fd', u'sex': 0, u'privilege': [], u'nickname': u'\u90c1\u9a8f'}
+    wx_user = WXUser.get_or_create(openid=userinfo.openid)
+    for key, value in userinfo.items():
+        if not hasattr(wx_user, key):
+            continue
+        if not isinstance(value, basestring):
+            value = u','.join(value)
+        setattr(wx_user, key, value)
+    wx_user.save()
 
 
 @app.route('/group_leader/')
+@auth_required
 def group_leader():
-    return render_template('group_leader.html')
+    wx_user = WXUser.get(WXUser.openid == wx_auth.openid)
+    wx_user_data = jsonify(model_to_dict(wx_user))
+    return render_template('group_leader.html', wx_user_data=wx_user_data)
 
 
 if __name__ == '__main__':
