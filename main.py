@@ -6,7 +6,7 @@ from models import User, WXUser, Group, Product, Purchase
 from auth import auth
 from admin import admin
 from api import api
-from wechat import WXOAuth2, auth_required
+from wechat import WXOAuth2, auth_required, wx_userinfo_fetched
 
 auth.setup()
 admin.setup()
@@ -20,6 +20,11 @@ wx_auth.init_app(app, '/wx_auth')
 @auth_required
 def show_wechat_user_info():
     return jsonify(wx_auth.userinfo)
+
+
+@wx_userinfo_fetched.connect_via(app)
+def save_wx_userinfo(sender, openid, userinfo):
+    app.logger.debug(u'WeChat User %s authorized us for personal info: %s' % (openid, userinfo))
 
 
 @app.route('/group_leader/')

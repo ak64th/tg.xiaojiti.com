@@ -5,3 +5,4 @@ wtf-peewee==0.2.3
 flask-peewee==0.6.6
 simplejson==3.8.1
 PyMySQL==0.6.7
+blinker==1.4

@@ -6,6 +6,7 @@ from functools import wraps
 
 import flask
 from flask import current_app, url_for
+from flask.signals import Namespace
 
 try:
     from urllib import quote
@@ -26,6 +27,9 @@ try:
 except ImportError:
     import json
 
+_signals = Namespace()
+wx_userinfo_fetched = _signals.signal('wx-userinfo-fetched')
+
 blueprint = flask.Blueprint('wx_auth', __name__)
 
 
@@ -39,28 +43,38 @@ def authorize():
 def callback():
     code = flask.request.args.get('code', None)
     if not code:
-        return flask.redirect(url_for('.no_auth'))
+        return flask.redirect(url_for(current_app.config['WX_OAUTH2_REFUSED_ROUTE']))
     validate_url = WXOAuth2.create_validate_url(code)
     validate_data = json.loads(urlopen(validate_url).read().strip().decode('utf8', 'ignore'))
     if u'openid' not in validate_data or u'access_token' not in validate_data:
         raise Exception('No response data from weixin access token api')
     wx_openid_session_key = current_app.config['WX_OPENID_SESSION_KEY']
     wx_oauth2_token_session_key = current_app.config['WX_OAUTH2_TOKEN_SESSION_KEY']
-    flask.session[wx_openid_session_key] = validate_data[u'openid']
-    flask.session[wx_oauth2_token_session_key] = validate_data[u'access_token']
-    userinfo_url = WXOAuth2.create_userinfo_url(token=validate_data[u'access_token'],
-                                                openid=validate_data[u'openid'])
+    openid = validate_data[u'openid']
+    access_token = validate_data[u'access_token']
+    flask.session[wx_openid_session_key] = openid
+    flask.session[wx_oauth2_token_session_key] = access_token
+    userinfo_url = WXOAuth2.create_userinfo_url(token=access_token, openid=openid)
     userinfo_resp = urlopen(userinfo_url).read().strip().decode('utf8', 'ignore')
     userinfo_data = json.loads(userinfo_resp)
     wx_oauth2_userinfo_session_key = current_app.config['WX_OAUTH2_USERINFO_SESSION_KEY']
     flask.session[wx_oauth2_userinfo_session_key] = userinfo_data
-    next_url = flask.session.get(current_app.config['WX_OAUTH2_NEXT_SESSION_KEY'], None)
+
+    wx_userinfo_fetched.send(current_app._get_current_object(), openid=openid, userinfo=userinfo_data)
+
+    next_url = flask.session.get(current_app.config['WX_OAUTH2_NEXT_SESSION_KEY'],
+                                 current_app.config['WX_OAUTH2_AFTER_ROUTE'])
     return flask.redirect(next_url)
 
 
 @blueprint.route('/no_auth')
 def no_auth():
     return u'您没有向我们授权获取个人信息'
+
+
+@blueprint.route('/after')
+def after():
+    return u'感谢您的支持。'
 
 
 def auth_required(function):
@@ -97,7 +111,9 @@ class WXOAuth2(object):
     |WX_AUTHORIZE_URL_BASE            | 'https://open.weixin.qq.com/connect/oauth2/authorize' |
     |WX_ACCESS_TOKEN_URL_BASE         | 'https://api.weixin.qq.com/sns/oauth2/access_token'   |
     |WX_USERINFO_URL_BASE             | 'https://api.weixin.qq.com/sns/userinfo'              |
-    |WX_OAUTH2_NEXT_SESSION_KEY       | 'WX_OAUTH2_NEXT'              |
+    |WX_OAUTH2_NEXT_SESSION_KEY       | 'WX_OAUTH2_NEXT'                                      |
+    |WX_OAUTH2_REFUSED_ROUTE          | '.no_auth'                                            |
+    |WX_OAUTH2_AFTER_ROUTE            | '.after'                                            |
     """
 
     def __init__(self, app=None, url_prefix=None):
@@ -115,6 +131,8 @@ class WXOAuth2(object):
         app.config.setdefault('WX_ACCESS_TOKEN_URL_BASE', 'https://api.weixin.qq.com/sns/oauth2/access_token')
         app.config.setdefault('WX_USERINFO_URL_BASE', 'https://api.weixin.qq.com/sns/userinfo')
         app.config.setdefault('WX_OAUTH2_NEXT_SESSION_KEY', 'WX_OAUTH2_NEXT')
+        app.config.setdefault('WX_OAUTH2_REFUSED_ROUTE', '.no_auth')
+        app.config.setdefault('WX_OAUTH2_AFTER_ROUTE', '.after')
 
         app.register_blueprint(blueprint, url_prefix=url_prefix)
 

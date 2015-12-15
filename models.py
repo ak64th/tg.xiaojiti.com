@@ -27,8 +27,28 @@ class User(Base, BaseUser):
     
 
 # 记录来访微信用户信息
+#  app.logger.debug(resp2)
+#  {
+#    "openid": "oXhUnw7OIvYKGj8ljstNJzXUZeZ0",
+#    "nickname": "郁骏",
+#    "sex": 0,
+#    "language": "en",
+#    "city": "",
+#    "province": "",
+#    "country": "中国",
+#    "headimgurl": "",
+#    "privilege": []
+#  }
 class WXUser(Base):
     openid = CharField()
+    nickname = CharField(null=True)
+    sex = BooleanField(null=True)
+    language = CharField(null=True)
+    city = CharField(null=True)
+    province = CharField(null=True)
+    country = CharField(null=True)
+    headimgurl = CharField(null=True)
+    privilege = CharField(null=True)
 
     def __unicode__(self):
         return self.openid
@@ -70,6 +90,7 @@ class Product(Base):
 class Purchase(Base):
     buyer = ForeignKeyField(WXUser)
     product = ForeignKeyField(Product)
+    group = ForeignKeyField(Group)
     amount = IntegerField()
 
     def __unicode__(self):
