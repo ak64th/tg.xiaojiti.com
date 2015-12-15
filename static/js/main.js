@@ -44,9 +44,7 @@ var int_app = (function(int_app){
 
     defaults: function() {
       return {
-        title: "No title",
-        "content": "No content yet",
-        "leader": 0
+        title: ""
       };
     },
 
@@ -141,7 +139,7 @@ var int_app = (function(int_app){
       this.$('#modal-container').hide();
     },
     create_group_pop_submit: function(){
-      data = { title: this.$('#group_add_title').val(), content: "", leader: this.wxUser.id };
+      data = { title: this.$('#group_add_title').val(), leader: this.wxUser.id };
       this.collection.create(data, {
         wait: true,
         success : function(model, resp, options){
