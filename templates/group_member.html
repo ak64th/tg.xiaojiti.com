@@ -1,0 +1,135 @@
+{% extends "layout.html" %}
+
+{% block title %}<title>团购助手-我是团员</title>{% endblock %}
+
+{% block body %}
+<div id="group_view_container" style="display: none">
+  <div class="block-menu clear" id="group_list_container">
+    <script type="text/template" id="group_list_template">
+      <a class="
+      <% if (index % 6 === 0) { %>
+      menu1 menu-big fl
+      <% } else if(index % 6 === 1) { %>
+      menu2 fr
+      <% } else if(index % 6 === 2) { %>
+      menu3 fr
+      <% } else if(index % 6 === 3) { %>
+      menu4 menu-big fr
+      <% } else if(index % 6 === 4) { %>
+      menu5 fl
+      <% } else if(index % 6 === 5) { %>
+      menu6 fl
+      <% } %>" id="group_<%= group.id %>" href="#/group/<%= group.id %>/"><img
+          src="/static/img/menu-cai-icon.png"><span><%- group.title %></span></a></a>
+    </script>
+  </div>
+</div>
+
+<script type="text/template" id="single_purchase_template">
+  <a class="toggle">
+    <i class="checkbox fl <% if (purchase.checked) { %>checked<% } %>"></i>
+    <img src="{{ url_for('static', filename='img/goods-cover.png') }}" class="cover fl">
+  </a>
+  <div class="txt fl">
+    <a class="btn allow-edit-body"><%- product.title %></a>
+
+    <div class="num"><%= product.price %>元</div>
+  </div>
+  <div class="num-cmd fr">
+    <a class="fl subtraction">-</a>
+    <span class="fl val"><%= purchase.amount %></span>
+    <a class="fl plus">+</a>
+  </div>
+</script>
+
+<script type="text/template" id="purchase_panel_template">
+  <div class="goods-footer-bar clear">
+    <a class="checkbox fl all-toggle">全选</a>
+
+    <div class="fl count"></div>
+    <div class="fr goods-list-btns">
+      <a class="btn2 submit"></a>
+      <a class="btn3 summary"></a>
+    </div>
+  </div>
+</script>
+
+<script type="text/template" id="group_summary_template">
+  <div class="cover">
+    <img src="{{ url_for('static', filename='img/tmp.png') }}" class="banner">
+    <div class="bg"></div>
+    <div class="txt"><%= products[0].title %><span class="r"><span class="num"><%= products[0].price %></span>元</span></div>
+  </div>
+  <div class="clear circle">
+    <div class="fl circle-blue">
+      <span class="l">一共有</span>
+      <span class="m"><%= members.length %></span>
+      <span class="r">位朋友</span>
+    </div>
+    <div class="fr">
+      <span class="l">共计</span>
+      <span class="m"><%= total %></span>
+      <span class="r">元</span>
+    </div>
+  </div>
+  <div class="member-block clear">
+    <i></i>
+    <% _.each(members, function(member){ %>
+    <div class="member">
+      <img src="{{ url_for('static', filename='img/avatar2.png') }}" class="avatar">
+      <span class="nick">购买数量:<span class="num"><%= member.amount %></span></span>
+    </div>
+    <% }); %>
+  </div>
+</script>
+
+
+{% endblock body %}
+
+{% block script %}
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('static', filename='js/models.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/group_list_view.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/purchase_list_view.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/group_summary_view.js') }}"></script>
+<script>
+var wxUser = {{ wx_user_data|safe }}
+
+groupView = new int_app.View.GroupListView();
+
+
+
+// 路由，默认到groupList
+appRouter = Backbone.Router.extend({
+  routes: {
+    "group/":     "groupList",
+    "group/:id/": "purchaseList",
+    "group/:id/summary/": "groupSummary",
+    "*path":      "groupList"
+  },
+  groupSummary : function(id) {
+    console.log('group summary route triggered. id:' + id);
+    this.loadView(new int_app.View.GroupSummaryView({group_id: id}));
+  },
+  purchaseList : function(id) {
+    console.log('group purchase list route triggered. id:' + id);
+    this.loadView(new int_app.View.PurchaseListView({wx_user_id: wxUser.id, group_id: id}));
+  },
+  groupList : function(path) {
+    console.log('group detail route triggered. path:' + path);
+    this.loadView(groupView);
+  },
+  loadView : function(view) {
+		this.view && (this.view.close ? this.view.close() : this.view.remove());
+		this.view = view;
+		this.view.render();
+	}
+});
+
+var router = new appRouter();
+Backbone.history.start();
+
+
+
+</script>
+{% endblock script %}

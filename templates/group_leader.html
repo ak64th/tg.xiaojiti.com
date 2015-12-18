@@ -59,7 +59,9 @@
 
 {% block script %}
 {{ super() }}
-<script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/models.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/group_list_view.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/product_list_view.js') }}"></script>
 <script>
 //var wxUser = new int_app.Model.WxUserModel
 //wxUser.fetch({data: {openid: '{{ openid }}'}, async: false})
@@ -70,12 +72,12 @@ groupView = new int_app.View.GroupListView({wxUser: wxUser});
 // 路由，默认到groupList
 appRouter = Backbone.Router.extend({
   routes: {
-    "group/:id/": "groupDetails",
-    "group/":    "groupList",
-    "*path":   "groupList"
+    "group/:id/": "productList",
+    "group/":     "groupList",
+    "*path":      "groupList"
   },
-  groupDetails : function(id) {
-    console.log('group detail route triggered. id:' + id);
+  productList : function(id) {
+    console.log('group product list route triggered. id:' + id);
     this.loadView(new int_app.View.ProductListView({group_id: id}));
   },
   groupList : function(path) {
@@ -89,9 +91,9 @@ appRouter = Backbone.Router.extend({
 	}
 });
 
-
 var router = new appRouter();
 Backbone.history.start();
 
 </script>
+
 {% endblock script %}
