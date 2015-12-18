@@ -14,7 +14,7 @@ class WXUserAdmin(Base):
 
 
 class GroupAdmin(Base):
-    columns = ('id', 'leader', 'title', 'content', 'created', 'modified')
+    columns = ('id', 'leader', 'title', 'created', 'modified')
 
 
 class ProductAdmin(Base):

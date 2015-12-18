@@ -52,6 +52,15 @@ def group_leader():
     wx_user_data = json.dumps(wx_user_resource.serialize_object(wx_user))
     return render_template('group_leader.html', wx_user_data=wx_user_data)
 
+@app.route('/group_member/')
+@auth_required
+def group_member():
+    # wx_user = WXUser.get(WXUser.openid == 'oXhUnw7OIvYKGj8ljstNJzXUZeZ0')
+    wx_user = WXUser.get(WXUser.openid == wx_auth.openid)
+    wx_user_resource = api._registry[WXUser]
+    wx_user_data = json.dumps(wx_user_resource.serialize_object(wx_user))
+    return render_template('group_member.html', wx_user_data=wx_user_data)
+
 
 if __name__ == '__main__':
     import logging
