@@ -1,7 +1,6 @@
 # coding=utf-8
-from flask import render_template, session, jsonify, url_for, request
+from flask import request, redirect, render_template, jsonify, render_template_string
 from peewee import create_model_tables
-from playhouse.shortcuts import model_to_dict
 import simplejson as json
 
 from app import app
@@ -10,6 +9,7 @@ from auth import auth
 from admin import admin
 from api import api
 from wechat import WXOAuth2, auth_required, wx_userinfo_fetched
+from photos import PhotoManager, UploadNotAllowed
 
 auth.setup()
 admin.setup()
@@ -18,6 +18,26 @@ api.setup()
 wx_auth = WXOAuth2()
 wx_auth.init_app(app, '/wx_auth')
 
+photo_manager = PhotoManager()
+photo_manager.init_app(app)
+
+
+@app.route('/upload', methods=['POST', 'GET'])
+def upload_handler():
+    if request.method == 'POST':
+        photo = request.files['photo']
+        if photo:
+            try:
+                filename = photo_manager.save(photo)
+                return redirect(photo_manager.url(filename))
+            except UploadNotAllowed:
+                app.logger.debug('UploadNotAllowed')
+    return render_template_string(u"""
+    <form action="{{ url_for('upload_handler') }}" method="post" enctype="multipart/form-data">
+      <input name='photo' type="file" id="photo"/>
+      <input type="submit" value='上传'/>
+    </form>
+    """)
 
 @app.route('/wechat')
 @auth_required

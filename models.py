@@ -74,6 +74,7 @@ class Product(Base):
     title = CharField()
     content = TextField()
     price = DecimalField()
+    photo = CharField(null=True)
 
     @property
     def buyers(self):
