@@ -88,10 +88,9 @@
 
 {% block script %}
 {{ super() }}
-<script type="text/javascript" src="{{ url_for('static', filename='js/models.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/group_list_view.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/purchase_list_view.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/group_summary_view.js') }}"></script>
+{% assets "member_js" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
 <script>
 var wxUser = {{ wx_user_data|safe }}
 
@@ -107,17 +106,17 @@ appRouter = Backbone.Router.extend({
     "group/:id/summary/": "groupSummary",
     "*path":      "groupList"
   },
-  groupSummary : function(id) {
-    console.log('group summary route triggered. id:' + id);
-    this.loadView(new int_app.View.GroupSummaryView({group_id: id}));
+  groupList : function(path) {
+    console.log('group detail route triggered. path:' + path);
+    this.loadView(groupView);
   },
   purchaseList : function(id) {
     console.log('group purchase list route triggered. id:' + id);
     this.loadView(new int_app.View.PurchaseListView({wx_user_id: wxUser.id, group_id: id}));
   },
-  groupList : function(path) {
-    console.log('group detail route triggered. path:' + path);
-    this.loadView(groupView);
+  groupSummary : function(id) {
+    console.log('group summary route triggered. id:' + id);
+    this.loadView(new int_app.View.GroupSummaryView({group_id: id}));
   },
   loadView : function(view) {
 		this.view && (this.view.close ? this.view.close() : this.view.remove());

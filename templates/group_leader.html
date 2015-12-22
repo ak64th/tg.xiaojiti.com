@@ -55,13 +55,42 @@
   </div>
 </script>
 
+<script type="text/template" id="group_summary_template">
+  <div class="cover">
+    <img src="{{ url_for('static', filename='img/tmp.png') }}" class="banner">
+    <div class="bg"></div>
+    <div class="txt"><%= products[0].title %><span class="r"><span class="num"><%= products[0].price %></span>元</span></div>
+  </div>
+  <div class="clear circle">
+    <div class="fl circle-blue">
+      <span class="l">一共有</span>
+      <span class="m"><%= members.length %></span>
+      <span class="r">位朋友</span>
+    </div>
+    <div class="fr">
+      <span class="l">共计</span>
+      <span class="m"><%= total %></span>
+      <span class="r">元</span>
+    </div>
+  </div>
+  <div class="member-block clear">
+    <i></i>
+    <% _.each(members, function(member){ %>
+    <div class="member">
+      <img src="{{ url_for('static', filename='img/avatar2.png') }}" class="avatar">
+      <span class="nick">购买数量:<span class="num"><%= member.amount %></span></span>
+    </div>
+    <% }); %>
+  </div>
+</script>
+
 {% endblock body %}
 
 {% block script %}
 {{ super() }}
-<script type="text/javascript" src="{{ url_for('static', filename='js/models.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/group_list_view.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/product_list_view.js') }}"></script>
+{% assets "leader_js" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
 <script>
 //var wxUser = new int_app.Model.WxUserModel
 //wxUser.fetch({data: {openid: '{{ openid }}'}, async: false})
@@ -72,17 +101,22 @@ groupView = new int_app.View.GroupListView({wxUser: wxUser});
 // 路由，默认到groupList
 appRouter = Backbone.Router.extend({
   routes: {
-    "group/:id/": "productList",
     "group/":     "groupList",
+    "group/:id/": "productList",
+    "group/:id/summary/": "groupSummary",
     "*path":      "groupList"
+  },
+  groupList : function(path) {
+    console.log('group detail route triggered. path:' + path);
+    this.loadView(groupView);
   },
   productList : function(id) {
     console.log('group product list route triggered. id:' + id);
     this.loadView(new int_app.View.ProductListView({group_id: id}));
   },
-  groupList : function(path) {
-    console.log('group detail route triggered. path:' + path);
-    this.loadView(groupView);
+  groupSummary : function(id) {
+    console.log('group summary route triggered. id:' + id);
+    this.loadView(new int_app.View.GroupSummaryView({group_id: id}));
   },
   loadView : function(view) {
 		this.view && (this.view.close ? this.view.close() : this.view.remove());

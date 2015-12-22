@@ -40,12 +40,13 @@ int_app.View = (function(View, Model, Collection){
     buttons: {
       'add': $('<a class="btn1 new"></a>'),
       'submit': $('<a class="btn2 submit"></a>'),
-      'statistic': $('<a class="btn3"></a>'),
+      'statistic': $('<a class="btn3 summary"></a>'),
       'finish': $('<a class="btn4"></a>'),
     },
     events: {
       "click .new": "newProduct",
       "click .submit": "submitGroup",
+      "click .summary": "groupSummary",
     },
     initialize: function(options) {
       this.initUI();
@@ -86,6 +87,9 @@ int_app.View = (function(View, Model, Collection){
     },
     submitGroup: function(){
       location.hash = '/group/';
+    },
+    groupSummary: function(){
+      window.location.hash = '/group/' + this.group_id + '/summary/';
     }
   });
 

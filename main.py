@@ -8,12 +8,14 @@ from models import User, WXUser, Group, Product, Purchase
 from auth import auth
 from admin import admin
 from api import api
+from assets import assets
 from wechat import WXOAuth2, auth_required, wx_userinfo_fetched
 from photos import PhotoManager, UploadNotAllowed
 
 auth.setup()
 admin.setup()
 api.setup()
+assets.init_app(app)
 
 wx_auth = WXOAuth2()
 wx_auth.init_app(app, '/wx_auth')

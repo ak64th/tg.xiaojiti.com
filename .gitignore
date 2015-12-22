@@ -18,8 +18,7 @@ __pycache__
 
 #local files
 /uwsgi.local.ini
-/cas.log
-/serve.sh
+
 /static/gen
 /static/.webassets-cache
 *.bak
