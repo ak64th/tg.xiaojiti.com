@@ -24,12 +24,14 @@ photo_manager.init_app(app)
 
 @app.route('/upload', methods=['POST', 'GET'])
 def upload_handler():
+    filename = None
     if request.method == 'POST':
         photo = request.files['photo']
         if photo:
             try:
                 filename = photo_manager.save(photo)
-                return redirect(photo_manager.url(filename))
+                # thumb_url = photo_manager.thumb_url(filename)
+                # return redirect(thumb_url)
             except UploadNotAllowed:
                 app.logger.debug('UploadNotAllowed')
     return render_template_string(u"""
@@ -37,7 +39,10 @@ def upload_handler():
       <input name='photo' type="file" id="photo"/>
       <input type="submit" value='上传'/>
     </form>
-    """)
+    {% if image_name %}
+    <a href="{{ photo_url_for(image_name) }}"><img src="{{ thumb_url_for(image_name, size='100x100', crop='fit') }}"/></a>
+    {% endif %}
+    """, image_name=filename)
 
 @app.route('/wechat')
 @auth_required

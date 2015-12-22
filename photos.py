@@ -1,11 +1,18 @@
 # coding:utf-8
 import os
 import uuid
+import errno
 import flask
+from werkzeug.exceptions import abort
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
-IMAGES = ('.jpg', '.jpeg', '.png', '.gif', '.svg', '.bmp')
+try:
+    from PIL import Image, ImageOps
+except ImportError:
+    raise RuntimeError('Image module of PIL needs to be installed')
+
+IMAGES = ('.jpg', '.jpeg', '.png', '.gif', '.svg', '.bmp', '.webp')
 
 
 def addslash(url):
@@ -37,8 +44,8 @@ class PhotoManagerConfiguration(object):
     def __init__(self, destination, base_url, thumb_destination=None, thumb_base_url=None, allow=IMAGES):
         self.destination = destination
         self.base_url = addslash(base_url)
-        self.thumb_destination = thumb_destination or self.destination
-        self.thumb_base_url = addslash(thumb_base_url) or self.base_url
+        self.thumb_destination = thumb_destination
+        self.thumb_base_url = addslash(thumb_base_url)
         self.allow = allow
 
     @property
@@ -59,9 +66,9 @@ class PhotoManager(object):
     |Key                  | Default             | Description
     |---------------------|---------------------|-------------------
     |MEDIA_PHOTOS_FOLDER  | 'media/photos'      | 保存照片的目录
-    |MEDIA_THUMBS_FOLDER  | 'media/photos'      | 保存缩略图的目录
+    |MEDIA_THUMBS_FOLDER  | 'media/thumbs'      | 保存缩略图的目录
     |MEDIA_PHOTOS_URL     | '/media/photos/'    | 显示照片的url根路径
-    |MEDIA_THUMBS_URL     | '/media/photos/'    | 显示缩略图的url根路径
+    |MEDIA_THUMBS_URL     | '/media/thumbs/'    | 显示缩略图的url根路径
 
 
     主要方法
@@ -84,23 +91,28 @@ class PhotoManager(object):
 
         destination = app.config.get('MEDIA_PHOTOS_FOLDER', 'media/photos')
         base_url = app.config.get('MEDIA_PHOTOS_URL', '/media/photos/')
-        thumb_destination = app.config.get('MEDIA_THUMBS_FOLDER')
-        thumb_base_url = app.config.get('MEDIA_THUMBS_URL')
+        thumb_destination = app.config.get('MEDIA_THUMBS_FOLDER', 'media/thumbs')
+        thumb_base_url = app.config.get('MEDIA_THUMBS_URL', '/media/thumbs/')
 
         self.config = PhotoManagerConfiguration(destination, base_url, thumb_destination, thumb_base_url)
-        self.set_routes()
+
+        self.blueprint.add_url_rule(self.config.base_url + '<filename>',
+                                    endpoint='export_photo', view_func=self.export_photo)
+        self.blueprint.add_url_rule(self.config.thumb_base_url + '<miniature>',
+                                    endpoint='export_thumb', view_func=self.export_thumb)
         self.app.register_blueprint(self.blueprint)
+
+        self.app.jinja_env.globals.update(photo_url_for=self.url)
+        self.app.jinja_env.globals.update(thumb_url_for=self.thumb_url)
 
     def export_photo(self, filename):
         path = self.config.destination
         return flask.send_from_directory(path, filename)
 
-    def set_routes(self):
-        full_url = self.config.base_url + '<filename>'
-        self.blueprint.add_url_rule(full_url, endpoint='export_photo', view_func=self.export_photo)
+    def export_thumb(self, miniature):
+        return flask.send_from_directory(self.config.thumb_destination, miniature)
 
-    @staticmethod
-    def resolve_conflict(target_folder, basename):
+    def resolve_conflict(self, target_folder, basename):
         """
         If a file with the selected name already exists in the target folder,
         this method is called to resolve the conflict. It should return a new
@@ -124,6 +136,42 @@ class PhotoManager(object):
         """
         return flask.url_for('photo_manager.export_photo', filename=filename)
 
+    def thumb_url(self, filename, size='96x96', width=None, height=None, crop=None, bg=None, quality=85):
+        if not width or not height:
+            width, height = [int(x) for x in size.split('x')]
+
+        name, fm = os.path.splitext(filename)
+
+        miniature = self._get_name(name, fm, size, crop, bg, quality)
+        thumb_filename = flask.safe_join(self.config.thumb_destination, miniature)
+        self._ensure_path(thumb_filename)
+
+        if not os.path.exists(thumb_filename):
+            original_filename = flask.safe_join(self.config.destination, filename)
+            if not os.path.exists(original_filename):
+                abort(404)
+
+            thumb_size = (width, height)
+
+            try:
+                image = Image.open(original_filename)
+            except IOError:
+                abort(404)
+                return None
+
+            if crop == 'fit':
+                img = ImageOps.fit(image, thumb_size, Image.ANTIALIAS)
+            else:
+                img = image.copy()
+                img.thumbnail((width, height), Image.ANTIALIAS)
+
+            if bg:
+                img = self._bg_square(img, bg)
+
+            img.save(thumb_filename, image.format, quality=quality)
+
+        return flask.url_for('photo_manager.export_thumb', miniature=miniature)
+
     def save(self, storage, name=None, random_name=True):
         """
         保存文件到设定路径
@@ -137,6 +185,7 @@ class PhotoManager(object):
             raise TypeError("storage must be a werkzeug.FileStorage")
 
         basename, ext = os.path.splitext(storage.filename)
+        ext = ext.lower()
 
         if not (ext in self.config.allow):
             raise UploadNotAllowed()
@@ -158,3 +207,30 @@ class PhotoManager(object):
         target = os.path.join(target_folder, basename)
         storage.save(target)
         return basename
+
+    @staticmethod
+    def _get_name(name, fm, *args):
+        for v in args:
+            if v:
+                name += '_%s' % v
+        name += fm
+
+        return name
+
+    @staticmethod
+    def _ensure_path(full_path):
+        directory = os.path.dirname(full_path)
+
+        try:
+            if not os.path.exists(full_path):
+                os.makedirs(directory)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
+
+    @staticmethod
+    def _bg_square(img, color=0xff):
+        size = (max(img.size),) * 2
+        layer = Image.new('L', size, color)
+        layer.paste(img, tuple(map(lambda x: (x[0] - x[1]) / 2, zip(size, img.size))))
+        return layer
