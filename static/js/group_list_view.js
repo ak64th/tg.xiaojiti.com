@@ -2,10 +2,10 @@
 int_app.View = (function(View, Model){
   View.GroupListView = GroupListView = Backbone.View.extend({
     el: $('#group_view_container'),
+    template: JST.group,
     initialize: function(options) {
       this.wxUser = options && options.wxUser || {};
       this.collection = new int_app.Collection.GroupList();
-      this.template = _.template($('#group_list_template').html());
       this.listContainer = this.$('#group_list_container');
       this.listContainerCount = 0;
       this.listenTo(this.collection, 'add', this.onModelAdd);

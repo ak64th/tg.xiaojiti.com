@@ -4,7 +4,7 @@ int_app.View = (function(View, Model, Collection){
   View.GroupSummaryView = Backbone.View.extend({
     tagName: "div",
     className: 'detail-page',
-    template: _.template($('#group_summary_template').html()),
+    template: JST.group_summary,
     initialize: function(options) {
       this.group_id = options.group_id;
 

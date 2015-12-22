@@ -16,7 +16,7 @@ int_app.View = (function(View, Model, Collection){
       }
       this.listenTo(this.model, 'change', this.render);
     },
-    template: _.template($('#single_purchase_template').html()),
+    template: JST.purchase,
     render: function(){
       this.$el.html(this.template({
         purchase: this.model.toJSON(),

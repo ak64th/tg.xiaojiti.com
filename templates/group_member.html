@@ -25,23 +25,6 @@
   </div>
 </div>
 
-<script type="text/template" id="single_purchase_template">
-  <a class="toggle">
-    <i class="checkbox fl <% if (purchase.checked) { %>checked<% } %>"></i>
-    <img src="{{ url_for('static', filename='img/goods-cover.png') }}" class="cover fl">
-  </a>
-  <div class="txt fl">
-    <a class="btn allow-edit-body"><%- product.title %></a>
-
-    <div class="num"><%= product.price %>元</div>
-  </div>
-  <div class="num-cmd fr">
-    <a class="fl subtraction">-</a>
-    <span class="fl val"><%= purchase.amount %></span>
-    <a class="fl plus">+</a>
-  </div>
-</script>
-
 <script type="text/template" id="purchase_panel_template">
   <div class="goods-footer-bar clear">
     <a class="checkbox fl all-toggle">全选</a>
@@ -51,35 +34,6 @@
       <a class="btn2 submit"></a>
       <a class="btn3 summary"></a>
     </div>
-  </div>
-</script>
-
-<script type="text/template" id="group_summary_template">
-  <div class="cover">
-    <img src="{{ url_for('static', filename='img/tmp.png') }}" class="banner">
-    <div class="bg"></div>
-    <div class="txt"><%= products[0].title %><span class="r"><span class="num"><%= products[0].price %></span>元</span></div>
-  </div>
-  <div class="clear circle">
-    <div class="fl circle-blue">
-      <span class="l">一共有</span>
-      <span class="m"><%= members.length %></span>
-      <span class="r">位朋友</span>
-    </div>
-    <div class="fr">
-      <span class="l">共计</span>
-      <span class="m"><%= total %></span>
-      <span class="r">元</span>
-    </div>
-  </div>
-  <div class="member-block clear">
-    <i></i>
-    <% _.each(members, function(member){ %>
-    <div class="member">
-      <img src="{{ url_for('static', filename='img/avatar2.png') }}" class="avatar">
-      <span class="nick">购买数量:<span class="num"><%= member.amount %></span></span>
-    </div>
-    <% }); %>
   </div>
 </script>
 

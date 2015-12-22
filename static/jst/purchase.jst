@@ -1,0 +1,14 @@
+<a class="toggle">
+  <i class="checkbox fl <% if (purchase.checked) { %>checked<% } %>"></i>
+  <img src="/static/img/goods-cover.png" class="cover fl">
+</a>
+<div class="txt fl">
+  <a class="btn allow-edit-body"><%- product.title %></a>
+
+  <div class="num"><%= product.price %>元</div>
+</div>
+<div class="num-cmd fr">
+  <a class="fl subtraction">-</a>
+  <span class="fl val"><%= purchase.amount %></span>
+  <a class="fl plus">+</a>
+</div>

@@ -11,7 +11,7 @@ int_app.View = (function(View, Model, Collection){
       this.listenTo(this.model, 'change', this.render);
       this.listenTo(this.model, 'destroy', this.remove);
     },
-    template: _.template($('#product_template').html()),
+    template: JST.product,
     render: function(){
       this.$el.html(this.template({product: this.model.toJSON()}));
       return this;

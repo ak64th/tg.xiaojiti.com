@@ -1,0 +1,12 @@
+<img src="/static/img/goods-cover.png" class="cover fl">
+<div class="txt fl">
+  <input class="btn editable" data-field="title" value="<%- product.title %>"/>
+
+  <div class="textarea-wp">
+    <textarea class="editable" data-field="content" placeholder="商品说明"><%- product.content %></textarea>
+  </div>
+</div>
+<div class="price fr">
+  <input class="editable price-tag" data-field="price" value="<%= product.price %>" size="6" type="text"/>元
+  <div class="btn">点击修改价格</div>
+</div>

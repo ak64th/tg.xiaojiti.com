@@ -1,0 +1,15 @@
+<a class="
+<% if (index % 6 === 0) { %>
+menu1 menu-big fl
+<% } else if(index % 6 === 1) { %>
+menu2 fr
+<% } else if(index % 6 === 2) { %>
+menu3 fr
+<% } else if(index % 6 === 3) { %>
+menu4 menu-big fr
+<% } else if(index % 6 === 4) { %>
+menu5 fl
+<% } else if(index % 6 === 5) { %>
+menu6 fl
+<% } %>" id="group_<%= group.id %>" href="#/group/<%= group.id %>/"><img
+    src="/static/img/menu-cai-icon.png"><span><%- group.title %></span></a></a>
