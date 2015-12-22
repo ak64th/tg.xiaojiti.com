@@ -67,24 +67,23 @@ def save_wx_userinfo(sender, userinfo):
     wx_user.save()
 
 
-@app.route('/group_leader/')
-@auth_required
-def group_leader():
+def wx_user_data():
     # wx_user = WXUser.get(WXUser.openid == 'oXhUnw7OIvYKGj8ljstNJzXUZeZ0')
     wx_user = WXUser.get(WXUser.openid == wx_auth.openid)
     # 调用api插件来输出json，保证json序列化的一致性
     wx_user_resource = api._registry[WXUser]
-    wx_user_data = json.dumps(wx_user_resource.serialize_object(wx_user))
-    return render_template('group_leader.html', wx_user_data=wx_user_data)
+    return json.dumps(wx_user_resource.serialize_object(wx_user))
+
+
+@app.route('/group_leader/')
+@auth_required
+def group_leader():
+    return render_template('group_leader.html', wx_user_data=wx_user_data())
 
 @app.route('/group_member/')
 @auth_required
 def group_member():
-    # wx_user = WXUser.get(WXUser.openid == 'oXhUnw7OIvYKGj8ljstNJzXUZeZ0')
-    wx_user = WXUser.get(WXUser.openid == wx_auth.openid)
-    wx_user_resource = api._registry[WXUser]
-    wx_user_data = json.dumps(wx_user_resource.serialize_object(wx_user))
-    return render_template('group_member.html', wx_user_data=wx_user_data)
+    return render_template('group_member.html', wx_user_data=wx_user_data())
 
 
 if __name__ == '__main__':
