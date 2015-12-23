@@ -14,11 +14,11 @@ class WXUserAdmin(Base):
 
 
 class GroupAdmin(Base):
-    columns = ('id', 'leader', 'title', 'created', 'modified')
+    columns = ('id', 'leader', 'title', 'finished', 'created', 'modified')
 
 
 class ProductAdmin(Base):
-    columns = ('id', 'title', 'content', 'price', 'group', 'created', 'modified')
+    columns = ('id', 'title', 'content', 'price', 'group', 'photo', 'created', 'modified')
 
 
 class PurchaseAdmin(Base):

@@ -57,6 +57,7 @@ class WXUser(Base):
 class Group(Base):
     leader = ForeignKeyField(WXUser)
     title = CharField()
+    finished = BooleanField(default=False)
 
     @property
     def members(self):
