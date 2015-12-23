@@ -31,14 +31,14 @@ def upload_handler():
         photo = request.files['photo']
         if photo:
             try:
-                filename = photo_manager.save(photo)
+                filename = photo_manager.save(photo, process='resize', width=1024, height=1024)
                 # thumb_url = photo_manager.thumb_url(filename)
                 # return redirect(thumb_url)
             except UploadNotAllowed:
                 app.logger.debug('UploadNotAllowed')
     return render_template_string(u"""
     <form action="{{ url_for('upload_handler') }}" method="post" enctype="multipart/form-data">
-      <input name='photo' type="file" id="photo"/>
+      <input type="file" accept="image/*" capture="camera" class="file" name='photo' id="photo"/>
       <input type="submit" value='上传'/>
     </form>
     {% if image_name %}

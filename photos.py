@@ -2,10 +2,12 @@
 import os
 import uuid
 import errno
+
 import flask
 from werkzeug.exceptions import abort
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
+
 
 try:
     from PIL import Image, ImageOps
@@ -172,7 +174,7 @@ class PhotoManager(object):
 
         return flask.url_for('photo_manager.export_thumb', miniature=miniature)
 
-    def save(self, storage, name=None, random_name=True):
+    def save(self, storage, name=None, random_name=True, process=None, **options):
         """
         保存文件到设定路径
 
@@ -180,6 +182,9 @@ class PhotoManager(object):
         :param name: 如果为None，自动生成文件名。
                      可以包含目录路径, 如``photos.save(file, name="someguy/photo_123.")``
         :param random_name: 是否生成随机文件名，仅挡name=None时有效
+        :param process: 对图片的预处理，可以选择```'resize'```或None
+        :param width: 对图片的预处理参数，限制图片宽度
+        :param height: 对图片的预处理参数，限制图片高度
         """
         if not isinstance(storage, FileStorage):
             raise TypeError("storage must be a werkzeug.FileStorage")
@@ -205,8 +210,40 @@ class PhotoManager(object):
             basename = self.resolve_conflict(target_folder, basename)
 
         target = os.path.join(target_folder, basename)
-        storage.save(target)
+
+        if process == 'resize':
+            width = options.pop('width', 1024)
+            height = options.pop('height', 1024)
+            image = Image.open(storage)
+            image.thumbnail((width, height), Image.ANTIALIAS)
+            image.save(target, image.format)
+        else:
+            storage.save(target)
+
         return basename
+
+    # def make_thumb(self, filename, width, height, thumb_filename=None, crop=None, bg=None, quality=85):
+    # """
+    #     生成缩略图
+    #
+    #     :param filename: 图像源文件名
+    #     :param name: 如果为None，自动生成文件名。
+    #                  可以包含目录路径, 如``photos.save(file, name="someguy/photo_123.")``
+    #     :param random_name: 是否生成随机文件名，仅挡name=None时有效
+    #
+    #     """
+    #
+    # def save_and_make_thumb(self, storage, name=None, random_name=True):
+    #     """
+    #     保存文件到设定路径并生成默认缩略图，缩略图文件名和
+    #
+    #     :param storage: 需要保存的文件，应该是一个FileStorage对象
+    #     :param name: 如果为None，自动生成文件名。
+    #                  可以包含目录路径, 如``photos.save(file, name="someguy/photo_123.")``
+    #     :param random_name: 是否生成随机文件名，仅挡name=None时有效
+    #     """
+    #     filename = self.save(storage, name, random_name)
+    #     pass
 
     @staticmethod
     def _get_name(name, fm, *args):
