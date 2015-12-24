@@ -7,7 +7,8 @@ int_app.View = (function(View, Model, Collection){
       "focus .editable":            "editing",
       "blur .editing":              "update",
       "click .cover":               "changingCover",
-      'change input[name="photo"]':   "changeCover"
+      'change input[name="photo"]': "changeCover",
+      "click .trash":               "removeItem"
     },
     initialize: function () {
       this.listenTo(this.model, 'change', this.render);
@@ -106,6 +107,9 @@ int_app.View = (function(View, Model, Collection){
       };
 
       reader.readAsDataURL(file);
+    },
+    removeItem: function(){
+      this.model.destroy();
     }
   });
 

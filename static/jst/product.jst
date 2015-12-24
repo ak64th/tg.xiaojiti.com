@@ -1,10 +1,11 @@
-<img src="<% if (product.photo){ %> /media/thumbs/<%= product.photo %> <% } else { %> /static/img/goods-cover.png <% } %>" class="cover fl">
+<img src="<% if (product.photo){ %> /media/thumbs/<%= product.photo %> <% } else { %> /static/img/upload.svg <% } %>" class="cover fl">
 <input type="file" accept="image/*" capture="camera" name="photo" hidden="hidden"/>
 <div class="txt fl">
   <div class="price fr">
     <input class="editable price-tag" data-field="price" value="<%= product.price %>" size="6" type="text"/>元
   </div>
   <input class="btn editable" data-field="title" value="<%- product.title %>"/>
+  <img src="/static/img/icon_trash.svg" class="trash"/>
 
   <div class="textarea-wp">
     <textarea class="editable" data-field="content" placeholder="商品说明"><%- product.content %></textarea>

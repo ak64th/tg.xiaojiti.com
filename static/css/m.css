@@ -43,11 +43,15 @@ a {
     border: 0;
     font-size: 0.45rem;
     color: #000;
-    display: block;
 }
 .goods-list .txt .editing {
     border: 1px solid #b8b8b8;
 }
+.goods-list .trash {
+    height: 0.45rem;
+    padding-left 0.06rem;
+}
+
 .goods-list .txt .price {
     font-size: 0.45rem;
     height: 0.6rem;
