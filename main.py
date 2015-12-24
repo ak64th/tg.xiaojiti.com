@@ -48,8 +48,10 @@ def upload_photo():
     photo = request.files['photo']
     if photo:
         try:
-            ilename = photo_manager.save(photo, process='resize', width=1080, height=1080)
-            return jsonify(filename=ilename)
+            filename = photo_manager.save(photo, process='resize', width=1080, height=1080)
+            # 生成一张默认的缩略图，文件名和原图相同
+            photo_manager.make_thumb(filename, miniature=filename, override=True, size='400x400')
+            return jsonify(filename=filename)
         except UploadNotAllowed:
             return make_response(jsonify(error='Upload Not Allowed'), 403)
     abort(400)

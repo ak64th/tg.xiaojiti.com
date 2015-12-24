@@ -138,27 +138,49 @@ class PhotoManager(object):
         """
         return flask.url_for('photo_manager.export_photo', filename=filename)
 
-    def thumb_url(self, filename, size='96x96', width=None, height=None, crop=None, bg=None, quality=85):
+    def thumb_url(self, filename, **options):
+        miniature = self.make_thumb(filename, override=False, **options)
+        if not miniature:
+            abort(404)
+        return flask.url_for('photo_manager.export_thumb', miniature=miniature)
+
+
+    def make_thumb(self, filename, miniature=None, override=False, size='96x96',
+                   width=None, height=None, crop=None, bg=None, quality=85):
+        """
+        生成缩略图
+
+        :param filename: 图像源文件名
+        :param miniature: 缩略图文件名，如果为None则按照参数自动生成
+        :param override: 是否覆盖同名文件
+        :param size: 缩略图尺寸，当width和height参数之一为None时生效
+        :param width: 缩略图宽度
+        :param height: 缩略图高度
+        :param crop: 是否需要裁剪
+        :param bg: 背景颜色
+        :param quality: 图像压缩质量
+        """
         if not width or not height:
             width, height = [int(x) for x in size.split('x')]
 
         name, fm = os.path.splitext(filename)
 
-        miniature = self._get_name(name, fm, size, crop, bg, quality)
+        if not miniature:
+            miniature = self._get_name(name, fm, size, crop, bg, quality)
+
         thumb_filename = flask.safe_join(self.config.thumb_destination, miniature)
         self._ensure_path(thumb_filename)
 
-        if not os.path.exists(thumb_filename):
+        if not os.path.exists(thumb_filename) or override:
             original_filename = flask.safe_join(self.config.destination, filename)
             if not os.path.exists(original_filename):
-                abort(404)
+                return None
 
             thumb_size = (width, height)
 
             try:
                 image = Image.open(original_filename)
             except IOError:
-                abort(404)
                 return None
 
             if crop == 'fit':
@@ -172,7 +194,8 @@ class PhotoManager(object):
 
             img.save(thumb_filename, image.format, quality=quality)
 
-        return flask.url_for('photo_manager.export_thumb', miniature=miniature)
+        return miniature
+
 
     def save(self, storage, name=None, random_name=True, process=None, **options):
         """
@@ -221,29 +244,6 @@ class PhotoManager(object):
             storage.save(target)
 
         return basename
-
-    # def make_thumb(self, filename, width, height, thumb_filename=None, crop=None, bg=None, quality=85):
-    # """
-    #     生成缩略图
-    #
-    #     :param filename: 图像源文件名
-    #     :param name: 如果为None，自动生成文件名。
-    #                  可以包含目录路径, 如``photos.save(file, name="someguy/photo_123.")``
-    #     :param random_name: 是否生成随机文件名，仅挡name=None时有效
-    #
-    #     """
-    #
-    # def save_and_make_thumb(self, storage, name=None, random_name=True):
-    #     """
-    #     保存文件到设定路径并生成默认缩略图，缩略图文件名和
-    #
-    #     :param storage: 需要保存的文件，应该是一个FileStorage对象
-    #     :param name: 如果为None，自动生成文件名。
-    #                  可以包含目录路径, 如``photos.save(file, name="someguy/photo_123.")``
-    #     :param random_name: 是否生成随机文件名，仅挡name=None时有效
-    #     """
-    #     filename = self.save(storage, name, random_name)
-    #     pass
 
     @staticmethod
     def _get_name(name, fm, *args):
