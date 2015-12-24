@@ -46,7 +46,10 @@ int_app.View = (function(View, Model){
       this.$('#modal-container').hide();
     },
     create_group_pop_submit: function(){
-      data = { title: this.$('#group_add_title').val(), leader: this.wxUser.id };
+      data = {
+        title: this.$('#group_add_title').val(),
+        leader: this.wxUser.id
+      };
       this.collection.create(data, {
         wait: true,
         success : function(model, resp, options){
