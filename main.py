@@ -1,7 +1,8 @@
 # coding=utf-8
-from flask import request, redirect, render_template, jsonify, render_template_string
+from flask import request, render_template, jsonify, make_response
 from peewee import create_model_tables
 import simplejson as json
+from werkzeug.exceptions import abort
 
 from app import app
 from models import User, WXUser, Group, Product, Purchase
@@ -11,6 +12,7 @@ from api import api
 from assets import assets
 from wechat import WXOAuth2, auth_required, wx_userinfo_fetched
 from photos import PhotoManager, UploadNotAllowed
+
 
 auth.setup()
 admin.setup()
@@ -22,34 +24,6 @@ wx_auth.init_app(app, '/wx_auth')
 
 photo_manager = PhotoManager()
 photo_manager.init_app(app)
-
-
-@app.route('/upload', methods=['POST', 'GET'])
-def upload_handler():
-    filename = None
-    if request.method == 'POST':
-        photo = request.files['photo']
-        if photo:
-            try:
-                filename = photo_manager.save(photo, process='resize', width=1024, height=1024)
-                # thumb_url = photo_manager.thumb_url(filename)
-                # return redirect(thumb_url)
-            except UploadNotAllowed:
-                app.logger.debug('UploadNotAllowed')
-    return render_template_string(u"""
-    <form action="{{ url_for('upload_handler') }}" method="post" enctype="multipart/form-data">
-      <input type="file" accept="image/*" capture="camera" class="file" name='photo' id="photo"/>
-      <input type="submit" value='上传'/>
-    </form>
-    {% if image_name %}
-    <a href="{{ photo_url_for(image_name) }}"><img src="{{ thumb_url_for(image_name, size='100x100', crop='fit') }}"/></a>
-    {% endif %}
-    """, image_name=filename)
-
-@app.route('/wechat')
-@auth_required
-def show_wechat_user_info():
-    return jsonify(wx_auth.userinfo)
 
 
 @wx_userinfo_fetched.connect_via(app)
@@ -67,6 +41,18 @@ def save_wx_userinfo(sender, userinfo):
             value = u','.join(value)
         setattr(wx_user, key, value)
     wx_user.save()
+
+
+@app.route('/upload_photo/', methods=['POST'])
+def upload_photo():
+    photo = request.files['photo']
+    if photo:
+        try:
+            ilename = photo_manager.save(photo, process='resize', width=1080, height=1080)
+            return jsonify(filename=ilename)
+        except UploadNotAllowed:
+            return make_response(jsonify(error='Upload Not Allowed'), 403)
+    abort(400)
 
 
 def wx_user_data():

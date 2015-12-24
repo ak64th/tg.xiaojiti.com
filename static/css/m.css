@@ -24,69 +24,63 @@ a {
     text-decoration: none;
 }
 .goods-item {
-    height: 2rem;
+    height: 3rem;
     border-bottom: 2px solid #b8b8b8;
     padding: 0.25rem 0.3rem;
 }
 .goods-list .cover {
-    width: 2rem;
-    height: 2rem;
+    width: 3rem;
+    height: 3rem;
 }
 .goods-list .txt {
     margin-left: 0.5rem;
 }
 .goods-list .txt .btn {
-    width: 1.28rem;
-    height: 0.41rem;
-    line-height: 0.41rem;
+    width: 3rem;
+    height: 0.6rem;
+    line-height: 0.6rem;
     text-align: center;
     border: 0;
-    font-size: 0.22rem;
+    font-size: 0.45rem;
     color: #000;
     display: block;
 }
 .goods-list .txt .editing {
     border: 1px solid #b8b8b8;
 }
-.goods-list .txt .textarea-wp {
-    width: 5.46rem;
-    height: 1.21rem;
-    margin-top: 0.2rem;
-    padding: 0.07rem 0.18rem;
-}
-.goods-list .txt .textarea-wp textarea {
-    padding: 0.07rem 0.18rem;
-    width: 100%;
-    height: 1.21rem;
-    margin-left: -0.18rem;
-    margin-top: -0.07rem;
-    border: 0;
-    font-size: 0.22rem;
-}
-.goods-list .txt .textarea-wp textarea.editing {
-    border: 1px solid #b8b8b8;
-}
-.goods-list .price {
-    margin-top: 0.8rem;
-    font-size: 0.26rem;
+.goods-list .txt .price {
+    font-size: 0.45rem;
+    height: 0.6rem;
     color: #b7b7b7;
     text-align: right;
 }
-.goods-list .price .btn {
-    color: #b7b7b7;
-    display: block;
-    margin-top: 0.25rem;
-    font-size: 0.25rem;
-}
-.goods-list .price .price-tag{
+.goods-list .txt .price .price-tag{
     font-size: 0.45rem;
     color: #5cb2a1;
     padding-right: 0.06rem;
     text-align: right;
     border: 0;
 }
-.goods-list .price .editing {
+.goods-list .txt .price .editing {
     color: #bbbbbb;
+    border: 1px solid #b8b8b8;
+}
+.goods-list .txt .textarea-wp {
+    width: 7.5rem;
+    height: 2rem;
+    margin-top: 0.2rem;
+    padding: 0.07rem 0.18rem;
+}
+.goods-list .txt .textarea-wp textarea {
+    padding: 0.07rem 0.18rem;
+    width: 100%;
+    height: 2rem;
+    margin-left: -0.18rem;
+    margin-top: -0.07rem;
+    border: 0;
+    font-size: 0.45rem;
+}
+.goods-list .txt .textarea-wp textarea.editing {
     border: 1px solid #b8b8b8;
 }
 .goods-list-page {

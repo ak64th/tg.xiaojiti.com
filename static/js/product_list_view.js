@@ -4,8 +4,10 @@ int_app.View = (function(View, Model, Collection){
     tagName: 'div',
     className: "goods-item clear",
     events: {
-      "focus .editable": "editing",
-      "blur .editing": "update",
+      "focus .editable":            "editing",
+      "blur .editing":              "update",
+      "click .cover":               "changingCover",
+      'change input[name="photo"]':   "changeCover"
     },
     initialize: function () {
       this.listenTo(this.model, 'change', this.render);
@@ -30,6 +32,80 @@ int_app.View = (function(View, Model, Collection){
         this.model.save();
       }
       $target.removeClass('editing');
+    },
+    // 选择图片
+    changingCover: function(){
+      this.$('input[name="photo"]').click();
+    },
+    // 先预览并检测图片，再上传图片
+    changeCover: function(ev){
+      var file = ev.currentTarget.files[0];
+      var image = this.$('.cover')[0];
+      var limit = 10;  //限制图片大小，单位MB
+      var allowedTypes = ['JPG','JPEG','PNG','GIF','SVG','BMP','WEBP'];
+      var imageType = /image.*/;
+
+      detectDevice = function (){
+        var ua = navigator.userAgent;
+        var brand = {
+          apple: ua.match(/(iPhone|iPod|iPad)/),
+          android: ua.match(/Android/),
+          microsoft: ua.match(/Windows Phone/)
+        }
+        return brand;
+      };
+      var device = detectDevice();
+
+      if (!device.android){ // Since android doesn't handle file types right, do not do this check for phones
+        if (!file.type.match(imageType)) {
+          console.log('Unsupported format: ' + file.type);
+          return false;
+        }
+      };
+
+      var self = this;
+
+      var updateFile = function(){
+        var data = new FormData();
+        data.append('photo', file);
+        $.ajax({
+          url: '/upload_photo/',
+          data: data,
+          cache: false,
+          contentType: false,
+          processData: false,
+          type: 'POST',
+          success: function(data){
+            self.model.set('photo', data['filename']);
+            self.model.save();
+          },
+          error: function(data){
+            console.log('fail to upload photo');
+          }
+        });
+      };
+
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var format = e.target.result.split(';');
+        format = format[0].split('/');
+          format = format[1].split('+');
+        format = format[0].toUpperCase();
+
+        // We will change this for an android
+        if (device.android){
+          format = file.name.split('.');
+              format = format[format.length-1].split('+');
+          format = format[0].toUpperCase();
+        }
+
+        if (allowedTypes.indexOf(format)>=0 && e.total<(limit*1024*1024)){
+          image.src = e.target.result;
+          updateFile();
+        }
+      };
+
+      reader.readAsDataURL(file);
     }
   });
 
