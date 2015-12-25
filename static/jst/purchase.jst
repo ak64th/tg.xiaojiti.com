@@ -1,6 +1,6 @@
 <a class="toggle">
   <i class="checkbox fl <% if (purchase.checked) { %>checked<% } %>"></i>
-  <img src="/static/img/goods-cover.png" class="cover fl">
+  <img src="<% if (product.photo){ %> /media/thumbs/<%= product.photo %> <% } else { %> /static/img/default-cover.svg <% } %>" class="cover fl">
 </a>
 <div class="txt fl">
   <a class="btn allow-edit-body"><%- product.title %></a>

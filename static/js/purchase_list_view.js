@@ -137,7 +137,7 @@ int_app.View = (function(View, Model, Collection){
       window.location.hash = '';
     },
     groupSummary: function(){
-      //this.syncAll();
+      this.syncAll();
       window.location.hash = '/group/' + this.group_id + '/summary/';
     },
     render: function() {
