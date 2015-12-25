@@ -38,7 +38,7 @@ int_app.View = (function(View, Model, Collection){
       var members = [];
       this.wxUsers.each(function(wxUser){
         amount = this.purchases.findWhere({buyer: wxUser.id}).get('amount');
-        members.push({"headimgurl": wxUser.headimgurl, "amount": amount});
+        members.push({"headimgurl": wxUser.get('headimgurl'), "amount": amount});
       }, this);
 
 
