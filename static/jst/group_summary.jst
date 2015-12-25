@@ -1,5 +1,5 @@
 <div class="cover">
-  <img src="/static/img/tmp.png" class="banner"/>
+  <img src="<% if ( products[0].photo){ %> /media/photos/<%=  products[0].photo %> <% } else { %> /static/img/tmp.png <% } %>" class="banner"/>
   <div class="bg"></div>
   <div class="txt"><%= products[0].title %><span class="r"><span class="num"><%= products[0].price %></span>元</span></div>
 </div>
@@ -19,7 +19,7 @@
   <i></i>
   <% _.each(members, function(member){ %>
   <div class="member">
-    <img src="/static/img/avatar2.png" class="avatar"/>
+    <img src="<% if (member.headimgurl){ %> <%= member.headimgurl %> <% } else { %> /static/img/default-avatar.svg <% } %>" class="avatar"/>
     <span class="nick">购买数量:<span class="num"><%= member.amount %></span></span>
   </div>
   <% }); %>
