@@ -91,7 +91,8 @@ a {
     padding-bottom: 2rem;
 }
 .goods-list-btns {
-    text-align: right;
+    text-align: center;
+    text-align: center;
     position: fixed;
     bottom: 0;
     left: 0;
@@ -103,7 +104,7 @@ a {
     width: 1.4rem;
     height: 1.4rem;
     display: inline-block;
-    margin: 0 0.1rem;
+    margin: 0 0.2rem;
     background-size: 100% 100%;
 }
 .goods-list-btns a.btn1 {
@@ -334,6 +335,7 @@ a {
     color: #fff;
 }
 .goods-footer-bar .goods-list-btns {
+    text-align: right;
     position: relative;
     background: transparent;
     width: 5rem;
