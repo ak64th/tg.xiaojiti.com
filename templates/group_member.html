@@ -5,23 +5,7 @@
 {% block body %}
 <div id="group_view_container" style="display: none">
   <div class="block-menu clear" id="group_list_container">
-    <script type="text/template" id="group_list_template">
-      <a class="
-      <% if (index % 6 === 0) { %>
-      menu1 menu-big fl
-      <% } else if(index % 6 === 1) { %>
-      menu2 fr
-      <% } else if(index % 6 === 2) { %>
-      menu3 fr
-      <% } else if(index % 6 === 3) { %>
-      menu4 menu-big fr
-      <% } else if(index % 6 === 4) { %>
-      menu5 fl
-      <% } else if(index % 6 === 5) { %>
-      menu6 fl
-      <% } %>" id="group_<%= group.id %>" href="#/group/<%= group.id %>/"><img
-          src="/static/img/menu-cai-icon.png"><span><%- group.title %></span></a></a>
-    </script>
+
   </div>
 </div>
 
@@ -35,8 +19,6 @@
     </div>
   </div>
 </script>
-
-
 {% endblock body %}
 
 {% block script %}
@@ -49,9 +31,6 @@ var wxUser = {{ wx_user_data|safe }}
 
 groupView = new int_app.View.GroupListView();
 
-
-
-// 路由，默认到groupList
 appRouter = Backbone.Router.extend({
   routes: {
     "group/":     "groupList",
@@ -60,15 +39,12 @@ appRouter = Backbone.Router.extend({
     "*path":      "groupList"
   },
   groupList : function(path) {
-    console.log('group detail route triggered. path:' + path);
     this.loadView(groupView);
   },
   purchaseList : function(id) {
-    console.log('group purchase list route triggered. id:' + id);
     this.loadView(new int_app.View.PurchaseListView({wx_user_id: wxUser.id, group_id: id}));
   },
   groupSummary : function(id) {
-    console.log('group summary route triggered. id:' + id);
     this.loadView(new int_app.View.GroupSummaryView({group_id: id}));
   },
   loadView : function(view) {
@@ -80,8 +56,6 @@ appRouter = Backbone.Router.extend({
 
 var router = new appRouter();
 Backbone.history.start();
-
-
 
 </script>
 {% endblock script %}
