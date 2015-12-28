@@ -88,6 +88,26 @@ class Product(Base):
         return '%s - Group:%s' % (self.title, self.group)
 
 
+# 保存微信授权信息，用appid标识不同应用的access_token
+class WxAccessToken(Base):
+    appid = CharField()
+    token = CharField(null=True)
+    expires_in = IntegerField(null=True)
+
+    def __unicode__(self):
+        return self.token
+
+
+# 保存微信授权信息，用appid标识不同应用的jsapi_ticket
+class WxJsapiTicket(Base):
+    appid = CharField()
+    ticket = CharField(null=True)
+    expires_in = IntegerField(null=True)
+
+    def __unicode__(self):
+        return self.ticket
+
+
 class Purchase(Base):
     buyer = ForeignKeyField(WXUser)
     product = ForeignKeyField(Product)
