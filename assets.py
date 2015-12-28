@@ -7,6 +7,20 @@ import simplejson as json
 
 # UnderscoreTemplateFilter
 class UST(JST):
+    """
+    继承jst filter，用``_.template``代替jst自带的template函数。window.JST是存放模板函数的命名空间。
+    生成的js文件类似下面：
+
+        (function(){
+          window.JST = window.JST || {};
+          window.JST['group'] = _.template("
+            <img src=\"/static/img/menu-cai-icon.png\"><span><%- group.title %></span>
+          ");
+        })();
+
+    通过JST.group()来输出模板。
+
+    """
     name = 'ust'
 
     def process_templates(self, out, hunks, **kwargs):
@@ -27,7 +41,6 @@ class UST(JST):
         out.write("})();")
 
 register_filter(UST)
-
 
 
 # 设置js和css文件打包
