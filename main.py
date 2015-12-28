@@ -1,16 +1,16 @@
 # coding=utf-8
-from flask import request, render_template, jsonify, make_response
+from flask import request, render_template, jsonify, make_response, url_for
 from peewee import create_model_tables
 import simplejson as json
 from werkzeug.exceptions import abort
 
 from app import app
-from models import User, WXUser, Group, Product, Purchase
+from models import User, WXUser, Group, Product, Purchase, WxJsapiTicket
 from auth import auth
 from admin import admin
 from api import api
 from assets import assets
-from wechat import WXOAuth2, auth_required, wx_userinfo_fetched
+from wechat import Sign, WXOAuth2, auth_required, wx_userinfo_fetched
 from photos import PhotoManager, UploadNotAllowed
 
 
@@ -58,22 +58,28 @@ def upload_photo():
 
 
 def wx_user_data():
-    # wx_user = WXUser.get(WXUser.openid == 'oXhUnw7OIvYKGj8ljstNJzXUZeZ0')
-    wx_user = WXUser.get(WXUser.openid == wx_auth.openid)
+    wx_user = WXUser.get(WXUser.openid == 'oXhUnw7OIvYKGj8ljstNJzXUZeZ0')
+    # wx_user = WXUser.get(WXUser.openid == wx_auth.openid)
     # 调用api插件来输出json，保证json序列化的一致性
     wx_user_resource = api._registry[WXUser]
     return json.dumps(wx_user_resource.serialize_object(wx_user))
 
 
 @app.route('/group_leader/')
-@auth_required
+# @auth_required
 def group_leader():
-    return render_template('group_leader.html', wx_user_data=wx_user_data())
+    appid = app.config['WX_APP_ID']
+    wx_jsapi_ticket = WxJsapiTicket.get(WxJsapiTicket.appid == appid)
+    sign = Sign(wx_jsapi_ticket.ticket, url_for('group_leader', _external=True)).sign()
+    return render_template('group_leader.html', wx_user_data=wx_user_data(), appid=appid, sign=sign)
 
 @app.route('/group_member/')
-@auth_required
+# @auth_required
 def group_member():
-    return render_template('group_member.html', wx_user_data=wx_user_data())
+    appid = app.config['WX_APP_ID']
+    wx_jsapi_ticket = WxJsapiTicket.get(WxJsapiTicket.appid == appid)
+    sign = Sign(wx_jsapi_ticket.ticket, url_for('group_member', _external=True)).sign()
+    return render_template('group_member.html', wx_user_data=wx_user_data(), appid=appid, sign=sign)
 
 
 if __name__ == '__main__':
