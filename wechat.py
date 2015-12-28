@@ -3,6 +3,10 @@
 WeChat OAuth2 extension for Flask
 """
 from functools import wraps
+import time
+import random
+import string
+import hashlib
 
 import flask
 from flask import current_app, url_for
@@ -190,3 +194,27 @@ class WXOAuth2(object):
     def userinfo(self):
         return flask.session.get(
             self.app.config['WX_OAUTH2_USERINFO_SESSION_KEY'], None)
+
+
+class Sign:
+    """
+    用于生成jsapi验证签名
+    """
+    def __init__(self, jsapi_ticket, url):
+        self.ret = {
+            'nonceStr': self.__create_nonce_str(),
+            'jsapi_ticket': jsapi_ticket,
+            'timestamp': self.__create_timestamp(),
+            'url': url
+        }
+
+    def __create_nonce_str(self):
+        return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(15))
+
+    def __create_timestamp(self):
+        return int(time.time())
+
+    def sign(self):
+        s = '&'.join(['%s=%s' % (key.lower(), self.ret[key]) for key in sorted(self.ret)])
+        self.ret['signature'] = hashlib.sha1(s).hexdigest()
+        return self.ret
