@@ -535,3 +535,9 @@ a {
 .detail-page .member-block .member .nick .num {
     color: #ae5454;
 }
+
+.load{
+  background: url('../img/ajax-loader.gif') !important;
+  background-repeat: no-repeat;
+  background-position: center;
+}
