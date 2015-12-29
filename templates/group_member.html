@@ -83,9 +83,21 @@ wx.ready(function () {
       this.view && (this.view.close ? this.view.close() : this.view.remove());
       this.view = view;
       this.view.render();
+      wx.hideMenuItems({
+        menuList: [
+          'menuItem:readMode',
+          'menuItem:openWithQQBrowser',
+          'menuItem:openWithSafari',
+          'menuItem:copyUrl'
+        ]
+      });
       wx.onMenuShareAppMessage({
         title: view.getShareTitle(),
-        desc: view.getShareDesc()
+        desc: view.getShareDesc(),
+      });
+      wx.onMenuShareTimeline({
+        title: view.getShareTitle(),
+        desc: view.getShareDesc(),
       });
     }
   });

@@ -45,15 +45,6 @@ wx.config({
 });
 
 wx.ready(function () {
-  wx.hideMenuItems({
-    menuList: [
-      'menuItem:readMode',
-      'menuItem:openWithQQBrowser',
-      'menuItem:openWithSafari',
-      'menuItem:copyUrl'
-    ]
-  });
-
   var groupView = new int_app.View.GroupListView({wxUser: wxUser});
 
   // 路由，默认到groupList
@@ -92,7 +83,20 @@ wx.ready(function () {
       this.view && (this.view.close ? this.view.close() : this.view.remove());
       this.view = view;
       this.view.render();
+      wx.hideMenuItems({
+        menuList: [
+          'menuItem:readMode',
+          'menuItem:openWithQQBrowser',
+          'menuItem:openWithSafari',
+          'menuItem:copyUrl'
+        ]
+      });
       wx.onMenuShareAppMessage({
+        title: view.getShareTitle(),
+        desc: view.getShareDesc(),
+        link: memberPageRoot + location.hash,
+      });
+      wx.onMenuShareTimeline({
         title: view.getShareTitle(),
         desc: view.getShareDesc(),
         link: memberPageRoot + location.hash,
