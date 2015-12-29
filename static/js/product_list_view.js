@@ -130,12 +130,18 @@ int_app.View = (function(View, Model, Collection){
     },
     initialize: function(options) {
       this.initUI();
-      this.group_id = options.group_id;
+      this.group_id = this.model.id;
       this.collection = new Collection.ProductList();
       this.subViews = [];
       this.listenTo(this.collection, "reset", this.resetAll);
       this.listenTo(this.collection, 'add', this.addOne);
       this.collection.fetch({ data: { group: this.group_id } });
+    },
+    getShareTitle: function(){
+      return this.model.get('title');
+    },
+    getShareDesc: function(){
+      return '欢迎参加' + this.model.get('title');
     },
     initUI: function(){
       this.$el.html('');

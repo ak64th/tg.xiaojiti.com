@@ -16,6 +16,12 @@ int_app.View = (function(View, Model){
       'click #group_add_cancel': 'create_group_pop_cancel',
       'click #group_add_submit': 'create_group_pop_submit'
     },
+    getShareTitle: function(){
+      return '胜因团购助手-团购列表';
+    },
+    getShareDesc: function(){
+      return '选择您感兴趣的团购项目';
+    },
     render: function() {
       this.$el.show();
       return this;
@@ -53,13 +59,7 @@ int_app.View = (function(View, Model){
       this.collection.create(data, {
         wait: true,
         success : function(model, resp, options){
-          console.log('success callback');
-          console.log(model);
           location.hash = '/group/' + model.get('id') + '/';
-        },
-        error : function(err) {
-          console.log('error callback');
-          console.log(err);
         }
       });
       this.$('#modal-container').hide();

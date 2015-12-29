@@ -31,13 +31,17 @@
 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 {% endassets %}
 <script>
+var memberPageRoot = "{{ url_for('group_member', _external=True) }}";
+
+var wxUser = {{ wx_user_data|safe }}
+
 wx.config({
   debug:     true,
   appId:     "{{ appid }}",
   timestamp: "{{ sign['timestamp']|safe }}",
   nonceStr:  "{{ sign['nonceStr']|safe }}",
   signature: "{{ sign['signature']|safe }}",
-  jsApiList: ['checkJsApi', 'hideMenuItems']
+  jsApiList: ['checkJsApi', 'hideMenuItems', 'onMenuShareTimeline', 'onMenuShareAppMessage']
 });
 
 wx.ready(function () {
@@ -49,41 +53,56 @@ wx.ready(function () {
       'menuItem:copyUrl'
     ]
   });
+
+  var groupView = new int_app.View.GroupListView({wxUser: wxUser});
+
+  // 路由，默认到groupList
+  appRouter = Backbone.Router.extend({
+    routes: {
+      "group/":     "groupList",
+      "group/:id/": "productList",
+      "group/:id/summary/": "groupSummary",
+      "*path":      "groupList"
+    },
+    groupList : function(path) {
+      console.log('group list route');
+      this.loadView(groupView);
+    },
+    productList : function(id) {
+      console.log('product list route');
+      var group = new int_app.Model.GroupModel({'id': id});
+      group.fetch({
+        success: _.bind(function(model, response, options) {
+          var view = new int_app.View.ProductListView({model: model})
+          this.loadView(view);
+        }, this)
+      });
+    },
+    groupSummary : function(id) {
+      console.log('group summary route');
+      var group = new int_app.Model.GroupModel({'id': id});
+      group.fetch({
+        success: _.bind(function(model, response, options) {
+          var view = new int_app.View.GroupSummaryView({model: model})
+          this.loadView(view);
+        }, this)
+      });
+    },
+    loadView : function(view) {
+      this.view && (this.view.close ? this.view.close() : this.view.remove());
+      this.view = view;
+      this.view.render();
+      wx.onMenuShareAppMessage({
+        title: view.getShareTitle(),
+        desc: view.getShareDesc(),
+        link: memberPageRoot + location.hash,
+      });
+    }
+  });
+
+  var router = new appRouter();
+  Backbone.history.start();
 });
-
-var wxUser = {{ wx_user_data|safe }}
-
-groupView = new int_app.View.GroupListView({wxUser: wxUser});
-
-// 路由，默认到groupList
-appRouter = Backbone.Router.extend({
-  routes: {
-    "group/":     "groupList",
-    "group/:id/": "productList",
-    "group/:id/summary/": "groupSummary",
-    "*path":      "groupList"
-  },
-  groupList : function(path) {
-    console.log('group detail route triggered. path:' + path);
-    this.loadView(groupView);
-  },
-  productList : function(id) {
-    console.log('group product list route triggered. id:' + id);
-    this.loadView(new int_app.View.ProductListView({group_id: id}));
-  },
-  groupSummary : function(id) {
-    console.log('group summary route triggered. id:' + id);
-    this.loadView(new int_app.View.GroupSummaryView({group_id: id}));
-  },
-  loadView : function(view) {
-		this.view && (this.view.close ? this.view.close() : this.view.remove());
-		this.view = view;
-		this.view.render();
-	}
-});
-
-var router = new appRouter();
-Backbone.history.start();
 
 </script>
 

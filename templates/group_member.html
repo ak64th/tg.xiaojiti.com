@@ -27,6 +27,8 @@
 <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 {% endassets %}
 <script>
+var wxUser = {{ wx_user_data|safe }}
+
 wx.config({
   debug:     true,
   appId:     "{{ appid }}",
@@ -37,46 +39,60 @@ wx.config({
 });
 
 wx.ready(function () {
-  wx.checkJsApi({
-    jsApiList: [
-      'getNetworkType',
-      'previewImage'
-    ],
-    success: function (res) {
-      alert(JSON.stringify(res));
+  wx.hideMenuItems({
+    menuList: [
+      'menuItem:readMode',
+      'menuItem:openWithQQBrowser',
+      'menuItem:openWithSafari',
+      'menuItem:copyUrl'
+    ]
+  });
+
+  groupView = new int_app.View.GroupListView();
+
+  appRouter = Backbone.Router.extend({
+    routes: {
+      "group/":     "groupList",
+      "group/:id/": "purchaseList",
+      "group/:id/summary/": "groupSummary",
+      "*path":      "groupList"
+    },
+    groupList : function(path) {
+      this.loadView(groupView);
+    },
+    purchaseList : function(id) {
+      console.log('purchase list route');
+      var group = new int_app.Model.GroupModel({'id': id});
+      group.fetch({
+        success: _.bind(function(model, response, options) {
+          var view = new int_app.View.PurchaseListView({model: model, wx_user_id: wxUser.id})
+          this.loadView(view);
+        }, this)
+      });
+    },
+    groupSummary : function(id) {
+      var group = new int_app.Model.GroupModel({'id': id});
+      group.fetch({
+        success: _.bind(function(model, response, options) {
+          var view = new int_app.View.GroupSummaryView({model: model})
+          this.loadView(view);
+        }, this)
+      });
+    },
+    loadView : function(view) {
+      this.view && (this.view.close ? this.view.close() : this.view.remove());
+      this.view = view;
+      this.view.render();
+      wx.onMenuShareAppMessage({
+        title: view.getShareTitle(),
+        desc: view.getShareDesc()
+      });
     }
   });
+
+  var router = new appRouter();
+  Backbone.history.start();
 });
-
-var wxUser = {{ wx_user_data|safe }}
-
-groupView = new int_app.View.GroupListView();
-
-appRouter = Backbone.Router.extend({
-  routes: {
-    "group/":     "groupList",
-    "group/:id/": "purchaseList",
-    "group/:id/summary/": "groupSummary",
-    "*path":      "groupList"
-  },
-  groupList : function(path) {
-    this.loadView(groupView);
-  },
-  purchaseList : function(id) {
-    this.loadView(new int_app.View.PurchaseListView({wx_user_id: wxUser.id, group_id: id}));
-  },
-  groupSummary : function(id) {
-    this.loadView(new int_app.View.GroupSummaryView({group_id: id}));
-  },
-  loadView : function(view) {
-		this.view && (this.view.close ? this.view.close() : this.view.remove());
-		this.view = view;
-		this.view.render();
-	}
-});
-
-var router = new appRouter();
-Backbone.history.start();
 
 </script>
 {% endblock script %}

@@ -50,7 +50,7 @@ int_app.View = (function(View, Model, Collection){
     initialize: function(options) {
       this.initUI();
       this.wx_user_id = options.wx_user_id
-      this.group_id = options.group_id;
+      this.group_id = this.model.id;
       this.subViews = [];
       this.products = new Collection.ProductList();
       this.purchases = new Collection.PurchaseList();
@@ -60,6 +60,12 @@ int_app.View = (function(View, Model, Collection){
       this.products.fetch({
         data: { group: this.group_id }
       });
+    },
+    getShareTitle: function(){
+      return this.model.get('title');
+    },
+    getShareDesc: function(){
+      return '欢迎参加' + this.model.get('title');
     },
     initUI: function(){
       this.$el.html('');

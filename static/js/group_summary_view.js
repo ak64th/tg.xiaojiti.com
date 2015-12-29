@@ -6,8 +6,7 @@ int_app.View = (function(View, Model, Collection){
     className: 'detail-page',
     template: JST.group_summary,
     initialize: function(options) {
-      this.group_id = options.group_id;
-
+      this.group_id = this.model.id;
       this.products = new Collection.ProductList();
       this.purchases = new Collection.PurchaseList();
       this.wxUsers = new Collection.WxUserList();
@@ -20,6 +19,12 @@ int_app.View = (function(View, Model, Collection){
           data: { product__group: this.group_id }
         })
       ).then(this.fetchUserInfo).done(this.load);
+    },
+    getShareTitle: function(){
+      return this.model.get('title');
+    },
+    getShareDesc: function(){
+      return '欢迎参加' + this.model.get('title');
     },
     fetchUserInfo: function(){
       var userList = this.purchases.pluck('buyer').join();
