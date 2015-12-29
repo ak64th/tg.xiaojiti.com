@@ -37,18 +37,17 @@ wx.config({
   timestamp: "{{ sign['timestamp']|safe }}",
   nonceStr:  "{{ sign['nonceStr']|safe }}",
   signature: "{{ sign['signature']|safe }}",
-  jsApiList: ['checkJsApi', 'getNetworkType', 'previewImage']
+  jsApiList: ['checkJsApi', 'hideMenuItems']
 });
 
 wx.ready(function () {
-  wx.checkJsApi({
-    jsApiList: [
-      'getNetworkType',
-      'previewImage'
-    ],
-    success: function (res) {
-      alert(JSON.stringify(res));
-    }
+  wx.hideMenuItems({
+    menuList: [
+      'menuItem:readMode',
+      'menuItem:openWithQQBrowser',
+      'menuItem:openWithSafari',
+      'menuItem:copyUrl'
+    ]
   });
 });
 
