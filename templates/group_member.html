@@ -30,7 +30,7 @@
 var wxUser = {{ wx_user_data|safe }}
 
 wx.config({
-  debug:     true,
+  debug:     false,
   appId:     "{{ appid }}",
   timestamp: "{{ sign['timestamp']|safe }}",
   nonceStr:  "{{ sign['nonceStr']|safe }}",
