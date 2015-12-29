@@ -35,7 +35,7 @@ wx.config({
   timestamp: "{{ sign['timestamp']|safe }}",
   nonceStr:  "{{ sign['nonceStr']|safe }}",
   signature: "{{ sign['signature']|safe }}",
-  jsApiList: ['checkJsApi', 'getNetworkType', 'previewImage']
+  jsApiList: ['checkJsApi', 'hideMenuItems', 'onMenuShareTimeline', 'onMenuShareAppMessage']
 });
 
 wx.ready(function () {

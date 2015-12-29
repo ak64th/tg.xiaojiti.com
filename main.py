@@ -58,27 +58,27 @@ def upload_photo():
 
 
 def wx_user_data():
-    wx_user = WXUser.get(WXUser.openid == 'oXhUnw7OIvYKGj8ljstNJzXUZeZ0')
-    # wx_user = WXUser.get(WXUser.openid == wx_auth.openid)
+    # wx_user = WXUser.get(WXUser.openid == 'oXhUnw7OIvYKGj8ljstNJzXUZeZ0')
+    wx_user = WXUser.get(WXUser.openid == wx_auth.openid)
     # 调用api插件来输出json，保证json序列化的一致性
     wx_user_resource = api._registry[WXUser]
     return json.dumps(wx_user_resource.serialize_object(wx_user))
 
 
 @app.route('/group_leader/')
-# @auth_required
+@auth_required
 def group_leader():
     appid = app.config['WX_APP_ID']
     wx_jsapi_ticket = WxJsapiTicket.get(WxJsapiTicket.appid == appid)
-    sign = Sign(wx_jsapi_ticket.ticket, url_for('group_leader', _external=True)).sign()
+    sign = Sign(wx_jsapi_ticket.ticket, request.url).sign()
     return render_template('group_leader.html', wx_user_data=wx_user_data(), appid=appid, sign=sign)
 
 @app.route('/group_member/')
-# @auth_required
+@auth_required
 def group_member():
     appid = app.config['WX_APP_ID']
     wx_jsapi_ticket = WxJsapiTicket.get(WxJsapiTicket.appid == appid)
-    sign = Sign(wx_jsapi_ticket.ticket, url_for('group_member', _external=True)).sign()
+    sign = Sign(wx_jsapi_ticket.ticket, request.url).sign()
     return render_template('group_member.html', wx_user_data=wx_user_data(), appid=appid, sign=sign)
 
 
