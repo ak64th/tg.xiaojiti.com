@@ -1,4 +1,5 @@
-from flask_peewee.rest import RestAPI, Authentication
+# coding=utf-8
+from flask_peewee.rest import RestAPI, RestResource, Authentication
 
 from app import app
 from auth import auth
@@ -13,12 +14,16 @@ class TestAuthentication(Authentication):
     def authorize(self):
         return True
 
+# 增大每次查询最大项目数
+class BaseResource(RestResource):
+    paginate_by = 100
+
 
 test_auth = TestAuthentication(auth)
 
 api = RestAPI(app, prefix='/api/v1', default_auth=test_auth)
 
-api.register(WXUser)
-api.register(Group)
-api.register(Product)
-api.register(Purchase)
+api.register(WXUser, provider=BaseResource)
+api.register(Group, provider=BaseResource)
+api.register(Product, provider=BaseResource)
+api.register(Purchase, provider=BaseResource)
