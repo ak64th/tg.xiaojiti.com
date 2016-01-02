@@ -123,6 +123,10 @@ class PhotoManager(object):
         :param target_folder: The absolute path to the target.
         :param basename: The file's original basename.
         """
+        return self.resolve_conflict_by_add_count(target_folder,basename)
+
+    @staticmethod
+    def resolve_conflict_by_add_count(target_folder, basename):
         name, ext = os.path.splitext(basename)
         count = 0
         while True:
