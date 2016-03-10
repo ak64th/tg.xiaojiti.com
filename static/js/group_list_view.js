@@ -31,7 +31,7 @@ int_app.View = (function(View, Model){
       return this;
     },
     loadGroups: function(){
-      data = this.wxUser ?  {leader: this.wxUser.id} : {};
+      data = this.wxUser.id ?  {leader: this.wxUser.id} : {finished__ne: 1};
       this.collection.fetch({ data: data });
     },
     // 显示单个group，index表示这是当前显示的第几个group

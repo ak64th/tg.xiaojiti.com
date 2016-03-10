@@ -121,12 +121,13 @@ int_app.View = (function(View, Model, Collection){
       'add': $('<a class="btn1 new"></a>'),
       'submit': $('<a class="btn2 submit"></a>'),
       'statistic': $('<a class="btn3 summary"></a>'),
-      'finish': $('<a class="btn4"></a>'),
+      'finish': $('<a class="btn4 finish"></a>'),
     },
     events: {
       "click .new": "newProduct",
       "click .submit": "submitGroup",
       "click .summary": "groupSummary",
+      "click .finish": "finishGroup",
     },
     initialize: function(options) {
       this.initUI();
@@ -176,6 +177,11 @@ int_app.View = (function(View, Model, Collection){
     },
     groupSummary: function(){
       window.location.hash = '/group/' + this.group_id + '/summary/';
+    },
+    finishGroup: function(){
+      console.log(this.model.toJSON());
+      this.model.save({'finished': true});
+      this.groupSummary();
     }
   });
 

@@ -93,7 +93,6 @@ a {
 .goods-list-btns {
     text-align: center;
     text-align: center;
-    position: fixed;
     bottom: 0;
     left: 0;
     padding: 0.3rem 0;
@@ -326,7 +325,6 @@ a {
     background-position: left bottom;
 }
 .goods-footer-bar {
-    position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
