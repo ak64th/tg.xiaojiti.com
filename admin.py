@@ -10,7 +10,7 @@ class Base(ModelAdmin):
 
 
 class WXUserAdmin(Base):
-    columns = ('id', 'openid')
+    columns = ('id', 'openid', 'nickname', 'sex')
 
 
 class GroupAdmin(Base):

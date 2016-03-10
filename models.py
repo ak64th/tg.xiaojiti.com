@@ -51,6 +51,8 @@ class WXUser(Base):
     privilege = CharField(null=True)
 
     def __unicode__(self):
+        if self.nickname:
+            return self.nickname
         return self.openid
 
 
